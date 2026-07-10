@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.env/
+
+# Databases
+*.db
+*.sqlite
+
+# Raw data from external repository
+data/raw/
+
+# Generated files
+plots/
+*.png
+*.jpg
+
+# VS Code settings
+.vscode/
+
+# AI assistant files
+.agents/
+.claude/
+
+# OS files
+.DS_Store

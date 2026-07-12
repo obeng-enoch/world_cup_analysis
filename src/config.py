@@ -24,3 +24,9 @@ CSV_FILES = {
     "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "matches": RAW_DATA_DIR / "matches.csv",
 }
+
+# Date columns that should be converted to datetime during the cleaning step.
+DATE_COLUMNS = {
+    "player_stats": ["last_verified"],
+    "matches": ["date"],
+}

@@ -1,5 +1,5 @@
 import pandas as pd
-from src.config import CSV_FILES
+from src.config import CSV_FILES, DATE_COLUMNS
 
 def load_csv(table_name: str) -> pd.DataFrame:
     """
@@ -67,4 +67,23 @@ def convert_dates(df, columns):
             errors="coerce"
         )
         
+    return df
+
+def clean_player_stats() -> pd.DataFrame:
+    """
+    Load and clean the player statistics dataset.
+    
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned player statistics DataFrame.
+    """
+
+    df = load_csv("player_stats")
+
+    df = convert_dates(
+        df,
+        DATE_COLUMNS["player_stats"]
+    )
+
     return df

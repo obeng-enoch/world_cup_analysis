@@ -1,12 +1,5 @@
 import pandas as pd
-
-REQUIRED_PLAYER_COLUMNS = (
-    "player_id",
-    "player_name",
-    "team_id",
-    "goals",
-    "last_verified",
-)
+from src.config import REQUIRED_COLUMNS
 
 def validate_player_stats(df: pd.DataFrame) -> bool:
     """
@@ -31,6 +24,8 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
         If required columns are missing.
     """
 
+    required_columns = REQUIRED_COLUMNS["player_stats"]
+    
     # Check 1: DataFrame is not empty
     if df.empty:
         raise ValueError("Player statistics dataset is empty.")
@@ -38,7 +33,7 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
     # Check 2: Required columns exist
     missing_columns = [
         column
-        for column in REQUIRED_PLAYER_COLUMNS
+        for column in required_columns
         if column not in df.columns
     ]
 
@@ -52,7 +47,6 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
         raise ValueError("Duplicate player_id values found.")
     
     # Check 4: Required fields contain no missing values
-    required_columns = list(REQUIRED_PLAYER_COLUMNS)
     missing_values = df[required_columns].isnull().any()
 
     columns_with_missing_values = missing_values[
@@ -63,6 +57,83 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
         raise ValueError(
             f"Missing values found in required columns: "
             f"{columns_with_missing_values}"
+        )
+    
+    return True
+
+
+def validate_teams(df: pd.DataFrame) -> bool:
+    """
+    Validate the cleaned teams DataFrame.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Cleaned teams DataFrame.
+        
+    Returns
+    -------
+    bool
+        True if all validation checks pass.
+
+    Raises
+    ------
+    ValueError
+        If the DataFrame is empty, contains duplicate team IDs,
+        contains duplicate FIFA codes, or has missing values in required columns.
+    KeyError
+        If required columns are missing.
+    """
+
+    required_columns = REQUIRED_COLUMNS["teams"]
+
+    # Check 1: DataFrame is not empty
+    if df.empty:
+        raise ValueError("Teams dataset is empty.")
+    
+    # Check 2: Required columns exist
+    missing_columns = [
+        column
+        for column in required_columns
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise KeyError(
+            f"Missing required columns: {missing_columns}"
+        )
+    
+    # Check 3: Required fields contain no null values
+    missing_values = df[required_columns].isnull().any()
+
+    columns_with_missing_values = missing_values[
+        missing_values
+    ].index.tolist()
+
+    if columns_with_missing_values:
+        raise ValueError(
+            "Missing values found in required columns: "
+            f"{columns_with_missing_values}"
+        )
+
+    # Check 4: team_id is unique
+    if not df["team_id"].is_unique:
+        raise ValueError("Duplicate team_id values found.")
+    
+    # Check 5: fifa_code must be unique
+    if not df["fifa_code"].is_unique:
+        raise ValueError("Duplicate fifa_code values found.")
+    
+    # Check 6: FIFA ranking must be postive integers
+    if (df["fifa_ranking_pre_tournament"] <= 0).any():
+        raise ValueError(
+            "FIFA ranking must be positive."
+        )
+    
+    # Check 7: Elo rating must be positive
+    if (df["elo_rating"] <= 0).any():
+        raise ValueError(
+            "Elo rating must be positive."
         )
     
     return True

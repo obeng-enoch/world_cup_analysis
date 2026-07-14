@@ -1,3 +1,5 @@
+from ast import Return
+
 import pandas as pd
 from src.config import CSV_FILES, DATE_COLUMNS
 
@@ -5,7 +7,7 @@ def load_csv(table_name: str) -> pd.DataFrame:
     """
     Load a CSV file into a pandas DataFrame.
 
-    parameters
+    Parameters
     ----------
     table_name : str
         Name of the table defined in config.CSV_FILES.
@@ -32,11 +34,14 @@ def load_csv(table_name: str) -> pd.DataFrame:
     
     return pd.read_csv(csv_path)
 
-def convert_dates(df, columns):
+def convert_dates(
+    df: pd.DataFrame,
+    columns: list[str]
+) -> pd.DataFrame:
     """
     Convert specified columns in a DataFrame to datetime.
     
-    parameters
+    Parameters
     ----------
     
     df : pd.DataFrame
@@ -79,11 +84,25 @@ def clean_player_stats() -> pd.DataFrame:
         Cleaned player statistics DataFrame.
     """
 
-    df = load_csv("player_stats")
+    player_stats = load_csv("player_stats")
 
-    df = convert_dates(
-        df,
+    player_stats = convert_dates(
+        player_stats,
         DATE_COLUMNS["player_stats"]
     )
 
-    return df
+    return player_stats
+
+def clean_teams() -> pd.DataFrame:
+    """
+    Load and clean the teams dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned teams DataFrame.
+    """
+
+    teams = load_csv("teams")
+
+    return teams

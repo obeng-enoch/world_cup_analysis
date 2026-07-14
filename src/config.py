@@ -16,17 +16,36 @@ DATABASE_PATH = DATABASE_DIR / "world_cup_2026.db"
 # Tables currently being processed
 TABLES = [
     "player_stats",
-    "matches",
+    "teams",
 ]
 
 # Registering every table here
 CSV_FILES = {
     "player_stats": RAW_DATA_DIR / "player_stats.csv",
-    "matches": RAW_DATA_DIR / "matches.csv",
+    "teams": RAW_DATA_DIR / "teams.csv",
 }
 
 # Date columns that should be converted to datetime during the cleaning step.
 DATE_COLUMNS = {
-    "player_stats": ["last_verified"],
-    "matches": ["date"],
+    "player_stats": ["last_verified"],}
+
+REQUIRED_COLUMNS = {
+    "player_stats": [
+        "player_id",
+        "player_name",
+        "team_id",
+        "goals",
+        "last_verified",
+    ],
+
+    "teams": [
+        "team_id",
+        "team_name",
+        "fifa_code",
+        "group_letter",
+        "confederation",
+        "fifa_ranking_pre_tournament",
+        "elo_rating",
+        "manager_name",
+    ],
 }

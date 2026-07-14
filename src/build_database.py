@@ -1,12 +1,10 @@
 import sqlite3
 
-import pandas as pd
-
-from src.clean_data import clean_player_stats
 from src.config import DATABASE_PATH
-from src.validators import validate_player_stats
+from src.clean_data import clean_player_stats, clean_teams
+from src.validators import validate_player_stats, validate_teams
 
-def get_database_connection():
+def get_database_connection() -> sqlite3.Connection:
     """
     Create and return a connection to the SQLite database.
     
@@ -20,28 +18,61 @@ def get_database_connection():
 
     return connection
 
-def load_player_stats(
-    df: pd.DataFrame,
-    connection: sqlite3.Connection,
-) -> None:
+def load_player_stats(connection: sqlite3.Connection) -> None:
     """
     Load the validated player statistics DataFrame into SQLite.
     
     Parameters
     ----------
-    df : pd.DataFrame
-        Validated player statistics DataFrame.
-        
     connection : sqlite3.Connection
         Active SQLite database connection.
     """
 
-    df.to_sql(
+    print("Loading player_stats")
+
+    #Extract and transform
+    players = clean_player_stats()
+
+    #validate
+    validate_player_stats(players)
+
+    #Load
+    players.to_sql(
         name="player_stats",
         con=connection,
         if_exists="replace",
         index=False,
     )
+
+    print("✓ player_stats loaded successfully.")
+
+def load_teams(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated teams DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading teams")
+
+    #Extract and transform
+    teams = clean_teams()
+
+    #validate
+    validate_teams(teams)
+
+    #Load
+    teams.to_sql(
+        name="teams",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ teams loaded successfully.")
 
 def build_database() -> None:
     """
@@ -51,18 +82,7 @@ def build_database() -> None:
     connection = get_database_connection()
 
     try:
-        print("Loading player_stats")
-
-        #Extract and transform
-        players = clean_player_stats()
-
-        #validate
-        validate_player_stats(players)
-
-        #Load
-        load_player_stats(players, connection)
-
-        print("✓ player_stats loaded successfully.")
-
+        load_player_stats(connection)
+        load_teams(connection)
     finally:
         connection.close()

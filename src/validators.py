@@ -42,11 +42,7 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
             f"Missing required columns: {missing_columns}"
         )
     
-    # Check 3: player_id is unique
-    if df["player_id"].duplicated().any():
-        raise ValueError("Duplicate player_id values found.")
-    
-    # Check 4: Required fields contain no missing values
+    # Check 3: Required fields contain no missing values
     missing_values = df[required_columns].isnull().any()
 
     columns_with_missing_values = missing_values[
@@ -58,6 +54,10 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
             f"Missing values found in required columns: "
             f"{columns_with_missing_values}"
         )
+    
+    # Check 4: player_id is unique
+    if df["player_id"].duplicated().any():
+        raise ValueError("Duplicate player_id values found.")
     
     return True
 
@@ -134,6 +134,68 @@ def validate_teams(df: pd.DataFrame) -> bool:
     if (df["elo_rating"] <= 0).any():
         raise ValueError(
             "Elo rating must be positive."
+        )
+    
+    return True
+
+def validate_matches(df: pd.DataFrame) -> bool:
+    """
+    Validate the cleaned matches DataFrame.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Cleaned matches DataFrame.
+        
+    Returns
+    -------
+    bool
+        True if all validation checks pass.
+
+    Raises
+    ------
+    ValueError
+        If the DataFrame is empty, contains duplicate match IDs,
+        or has missing values in required columns.
+    KeyError
+        If required columns are missing.
+    """
+
+    required_columns = REQUIRED_COLUMNS["matches"]
+
+    # Check 1: DataFrame is not empty
+    if df.empty:
+        raise ValueError("Matches dataset is empty.")
+    
+    # Check 2: Required columns exist
+    missing_columns = [
+        column
+        for column in required_columns
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise KeyError(
+            f"Missing required columns: {missing_columns}"
+        )
+    
+    # Check 3: Required fields contain no null values
+    missing_values = df[required_columns].isnull().any()
+
+    columns_with_missing_values = missing_values[
+        missing_values
+    ].index.tolist()
+
+    if columns_with_missing_values:
+        raise ValueError(
+            "Missing values found in required columns: "
+            f"{columns_with_missing_values}"
+        )
+
+    # Check 4: match_id must be unique
+    if not df["match_id"].is_unique:
+        raise ValueError(
+            "Duplicate match_id values found."
         )
     
     return True

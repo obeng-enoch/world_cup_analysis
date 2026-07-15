@@ -1,8 +1,18 @@
 import sqlite3
 
 from src.config import DATABASE_PATH
-from src.clean_data import clean_player_stats, clean_teams
-from src.validators import validate_player_stats, validate_teams
+
+from src.clean_data import (
+    clean_player_stats, 
+    clean_teams,
+    clean_matches,
+)
+
+from src.validators import (
+    validate_player_stats, 
+    validate_teams,
+    validate_matches
+)
 
 def get_database_connection() -> sqlite3.Connection:
     """
@@ -74,6 +84,34 @@ def load_teams(connection: sqlite3.Connection) -> None:
 
     print("✓ teams loaded successfully.")
 
+def load_matches(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated matches DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading matches")
+
+    #Extract and transform
+    matches = clean_matches()
+
+    #validate
+    validate_matches(matches)
+
+    #Load
+    matches.to_sql(
+        name="matches",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ matches loaded successfully.")
+
 def build_database() -> None:
     """
     Build the SQLite database from the cleaned and validated datasets.
@@ -84,5 +122,6 @@ def build_database() -> None:
     try:
         load_player_stats(connection)
         load_teams(connection)
+        load_matches(connection)
     finally:
         connection.close()

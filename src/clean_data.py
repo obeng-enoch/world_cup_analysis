@@ -106,3 +106,22 @@ def clean_teams() -> pd.DataFrame:
     teams = load_csv("teams")
 
     return teams
+
+def clean_matches() -> pd.DataFrame:
+    """
+    Load and clean the matches dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned matches DataFrame.
+    """
+
+    matches = load_csv("matches")
+
+    matches = convert_dates(
+        matches,
+        DATE_COLUMNS["matches"]
+    )
+
+    return matches

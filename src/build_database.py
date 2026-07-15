@@ -3,15 +3,17 @@ import sqlite3
 from src.config import DATABASE_PATH
 
 from src.clean_data import (
-    clean_player_stats, 
     clean_teams,
+    clean_venues,
+    clean_player_stats,
     clean_matches,
 )
 
 from src.validators import (
-    validate_player_stats, 
     validate_teams,
-    validate_matches
+    validate_venues,
+    validate_player_stats,
+    validate_matches,
 )
 
 def get_database_connection() -> sqlite3.Connection:
@@ -27,34 +29,6 @@ def get_database_connection() -> sqlite3.Connection:
     connection = sqlite3.connect(DATABASE_PATH)
 
     return connection
-
-def load_player_stats(connection: sqlite3.Connection) -> None:
-    """
-    Load the validated player statistics DataFrame into SQLite.
-    
-    Parameters
-    ----------
-    connection : sqlite3.Connection
-        Active SQLite database connection.
-    """
-
-    print("Loading player_stats")
-
-    #Extract and transform
-    players = clean_player_stats()
-
-    #validate
-    validate_player_stats(players)
-
-    #Load
-    players.to_sql(
-        name="player_stats",
-        con=connection,
-        if_exists="replace",
-        index=False,
-    )
-
-    print("✓ player_stats loaded successfully.")
 
 def load_teams(connection: sqlite3.Connection) -> None:
     """
@@ -83,6 +57,62 @@ def load_teams(connection: sqlite3.Connection) -> None:
     )
 
     print("✓ teams loaded successfully.")
+
+def load_venues(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated venues DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading venues")
+
+    #Extract and transform
+    venues = clean_venues()
+
+    #validate
+    validate_venues(venues)
+
+    #Load
+    venues.to_sql(
+        name="venues",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ venues loaded successfully.")
+
+def load_player_stats(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated player statistics DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading player_stats")
+
+    #Extract and transform
+    players = clean_player_stats()
+
+    #validate
+    validate_player_stats(players)
+
+    #Load
+    players.to_sql(
+        name="player_stats",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ player_stats loaded successfully.")
 
 def load_matches(connection: sqlite3.Connection) -> None:
     """
@@ -120,8 +150,9 @@ def build_database() -> None:
     connection = get_database_connection()
 
     try:
-        load_player_stats(connection)
         load_teams(connection)
+        load_venues(connection)
+        load_player_stats(connection)
         load_matches(connection)
     finally:
         connection.close()

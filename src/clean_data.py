@@ -74,6 +74,34 @@ def convert_dates(
         
     return df
 
+def clean_teams() -> pd.DataFrame:
+    """
+    Load and clean the teams dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned teams DataFrame.
+    """
+
+    teams = load_csv("teams")
+
+    return teams
+
+def clean_venues() -> pd.DataFrame:
+    """
+    Load and clean the venues dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned venues DataFrame.
+    """
+
+    venues = load_csv("venues")
+
+    return venues
+
 def clean_player_stats() -> pd.DataFrame:
     """
     Load and clean the player statistics dataset.
@@ -92,20 +120,6 @@ def clean_player_stats() -> pd.DataFrame:
     )
 
     return player_stats
-
-def clean_teams() -> pd.DataFrame:
-    """
-    Load and clean the teams dataset.
-
-    Returns
-    -------
-    pd.DataFrame
-        Cleaned teams DataFrame.
-    """
-
-    teams = load_csv("teams")
-
-    return teams
 
 def clean_matches() -> pd.DataFrame:
     """

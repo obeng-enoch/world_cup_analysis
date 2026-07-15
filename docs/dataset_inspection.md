@@ -8,28 +8,6 @@ reveals an actual problem.
 
 ---
 
-## player_stats.csv
-
-Rows: 1248
-
-Columns: 21
-
-### Cleaning Required
-
-- ✓ Load CSV
-- ✓ Convert date columns
-- ✗ Remove duplicates
-- ✗ Rename columns
-- ✗ Handle missing values
-
-### Validation Required
-
-- ✓ DataFrame not empty
-- ✓ Required columns exist
-- ✓ player_id unique
-- ✓ Required columns not null
-
----
 
 ## teams.csv
 
@@ -55,6 +33,50 @@ Columns: 8
 - ✓ fifa_code unique
 - ✓ Positive rankings
 - ✓ Positive Elo ratings
+
+## venues.csv
+
+Rows: 16
+
+Columns: 8
+
+### Cleaning Required
+
+- ✓ Load CSV
+- ✓ Convert date columns
+- ✗ Remove duplicates
+- ✗ Rename columns
+- ✗ Handle missing values
+
+### Validation Required
+
+- ✓ DataFrame not empty
+- ✓ Required columns exist
+- ✓ player_id unique
+- ✓ Required columns not null
+
+## player_stats.csv
+
+Rows: 1248
+
+Columns: 21
+
+### Cleaning Required
+
+- ✓ Load CSV
+- ✓ Convert date columns
+- ✗ Remove duplicates
+- ✗ Rename columns
+- ✗ Handle missing values
+
+### Validation Required
+
+- ✓ DataFrame not empty
+- ✓ Required columns exist
+- ✓ player_id unique
+- ✓ Required columns not null
+
+---
 
 ## matches
 

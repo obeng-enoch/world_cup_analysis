@@ -15,15 +15,17 @@ DATABASE_PATH = DATABASE_DIR / "world_cup_2026.db"
 
 # Tables currently being processed
 TABLES = [
-    "player_stats",
     "teams",
+    "venues",
+    "player_stats",
     "matches",
 ]
 
 # Registering every table here
 CSV_FILES = {
-    "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "teams": RAW_DATA_DIR / "teams.csv",
+    "venues": RAW_DATA_DIR / "venues.csv",
+    "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "matches": RAW_DATA_DIR / "matches.csv",
 }
 
@@ -34,14 +36,6 @@ DATE_COLUMNS = {
 }
 
 REQUIRED_COLUMNS = {
-    "player_stats": [
-        "player_id",
-        "player_name",
-        "team_id",
-        "goals",
-        "last_verified",
-    ],
-
     "teams": [
         "team_id",
         "team_name",
@@ -51,6 +45,25 @@ REQUIRED_COLUMNS = {
         "fifa_ranking_pre_tournament",
         "elo_rating",
         "manager_name",
+    ],
+
+    "venues": [
+        "venue_id",
+        "stadium_name",
+        "city",
+        "country",
+        "capacity",
+        "latitude",
+        "longitude",
+        "elevation_meters",
+    ],
+
+    "player_stats": [
+        "player_id",
+        "player_name",
+        "team_id",
+        "goals",
+        "last_verified",
     ],
 
     "matches": [

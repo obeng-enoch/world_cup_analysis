@@ -17,6 +17,7 @@ DATABASE_PATH = DATABASE_DIR / "world_cup_2026.db"
 TABLES = [
     "teams",
     "venues",
+    "tournament_stages",
     "player_stats",
     "matches",
 ]
@@ -25,6 +26,7 @@ TABLES = [
 CSV_FILES = {
     "teams": RAW_DATA_DIR / "teams.csv",
     "venues": RAW_DATA_DIR / "venues.csv",
+    "tournament_stages": RAW_DATA_DIR / "tournament_stages.csv",
     "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "matches": RAW_DATA_DIR / "matches.csv",
 }
@@ -56,6 +58,12 @@ REQUIRED_COLUMNS = {
         "latitude",
         "longitude",
         "elevation_meters",
+    ],
+
+    "tournament_stages": [
+        "stage_id",
+        "stage_name",
+        "is_knockout",
     ],
 
     "player_stats": [

@@ -102,6 +102,20 @@ def clean_venues() -> pd.DataFrame:
 
     return venues
 
+def clean_tournament_stages() -> pd.DataFrame:
+    """
+    Load and clean the tournament stages dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned tournament stages DataFrame.
+    """
+
+    tournament_stages = load_csv("tournament_stages")
+
+    return tournament_stages
+
 def clean_player_stats() -> pd.DataFrame:
     """
     Load and clean the player statistics dataset.

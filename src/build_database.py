@@ -6,6 +6,7 @@ from src.clean_data import (
     clean_teams,
     clean_venues,
     clean_tournament_stages,
+    clean_referees,
     clean_player_stats,
     clean_matches,
 )
@@ -14,6 +15,7 @@ from src.validators import (
     validate_teams,
     validate_venues,
     validate_tournament_stages,
+    validate_referees,
     validate_player_stats,
     validate_matches,
 )
@@ -116,6 +118,34 @@ def load_tournament_stages(connection: sqlite3.Connection) -> None:
 
     print("✓ tournament_stages loaded successfully.")
 
+def load_referees(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated referees DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading referees")
+
+    #Extract and transform
+    referees = clean_referees()
+
+    #validate
+    validate_referees(referees)
+
+    #Load
+    referees.to_sql(
+        name="referees",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ referees loaded successfully.")
+
 def load_player_stats(connection: sqlite3.Connection) -> None:
     """
     Load the validated player statistics DataFrame into SQLite.
@@ -183,6 +213,7 @@ def build_database() -> None:
         load_teams(connection)
         load_venues(connection)
         load_tournament_stages(connection)
+        load_referees(connection)
         load_player_stats(connection)
         load_matches(connection)
     finally:

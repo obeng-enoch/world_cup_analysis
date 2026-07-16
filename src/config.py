@@ -18,6 +18,7 @@ TABLES = [
     "teams",
     "venues",
     "tournament_stages",
+    "referees",
     "player_stats",
     "matches",
 ]
@@ -27,6 +28,7 @@ CSV_FILES = {
     "teams": RAW_DATA_DIR / "teams.csv",
     "venues": RAW_DATA_DIR / "venues.csv",
     "tournament_stages": RAW_DATA_DIR / "tournament_stages.csv",
+    "referees": RAW_DATA_DIR / "referees.csv",
     "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "matches": RAW_DATA_DIR / "matches.csv",
 }
@@ -64,6 +66,13 @@ REQUIRED_COLUMNS = {
         "stage_id",
         "stage_name",
         "is_knockout",
+    ],
+
+    "referees": [
+        "referee_id",
+        "name",
+        "country",
+        "avg_cards_per_game",
     ],
 
     "player_stats": [

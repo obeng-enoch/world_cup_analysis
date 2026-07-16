@@ -162,6 +162,55 @@ Validate:
 - Required columns contain no null values.
 - `is_knockout` contains boolean values.
 
+## referees.csv
+
+### Overview
+
+- Rows: 28
+- Columns: 4
+- Duplicate rows: 0
+- Primary key: `referee_id`
+
+### Column Summary
+
+| Column | Observation |
+|---------|-------------|
+| referee_id | Unique, no missing values |
+| name | Complete |
+| country | Complete |
+| avg_cards_per_game | Complete, positive numeric values |
+
+### Data Quality Findings
+
+- No missing values.
+- No duplicate rows.
+- Data types are appropriate for all columns.
+- `referee_id` appears to be a reliable primary key.
+- `avg_cards_per_game` contains positive numeric values representing each referee's historical average number of cards issued per match.
+
+### Cleaning Decisions
+
+- Load the dataset.
+- Preserve existing data types.
+- No transformations required.
+
+### Validation Decisions
+
+Validate:
+
+- DataFrame is not empty.
+- Required columns exist.
+- `referee_id` is unique.
+- Required columns contain no null values.
+- `avg_cards_per_game` contains non-negative numeric values.
+
+Do not require validation for:
+
+- `name`
+- `country`
+
+Beyond ensuring they are present, these descriptive text fields do not require additional validation.
+
 ## player_stats.csv
 
 ### Overview

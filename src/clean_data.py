@@ -116,6 +116,20 @@ def clean_tournament_stages() -> pd.DataFrame:
 
     return tournament_stages
 
+def clean_referees() -> pd.DataFrame:
+    """
+    Load and clean the referees dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned referees DataFrame.
+    """
+
+    referees = load_csv("referees")
+
+    return referees
+
 def clean_player_stats() -> pd.DataFrame:
     """
     Load and clean the player statistics dataset.

@@ -8,8 +8,9 @@ from src.clean_data import (
     clean_tournament_stages,
     clean_referees,
     clean_squads_and_players,
-    clean_player_stats,
     clean_matches,
+    clean_player_stats,
+    clean_match_team_stats
 )
 
 from src.validators import (
@@ -18,8 +19,9 @@ from src.validators import (
     validate_tournament_stages,
     validate_referees,
     validate_squads_and_players,
-    validate_player_stats,
     validate_matches,
+    validate_player_stats,
+    validate_match_team_stats
 )
 
 def get_database_connection() -> sqlite3.Connection:
@@ -176,34 +178,6 @@ def load_squads_and_players(connection: sqlite3.Connection) -> None:
 
     print("✓ squads_and_players loaded successfully.")
 
-def load_player_stats(connection: sqlite3.Connection) -> None:
-    """
-    Load the validated player statistics DataFrame into SQLite.
-    
-    Parameters
-    ----------
-    connection : sqlite3.Connection
-        Active SQLite database connection.
-    """
-
-    print("Loading player_stats")
-
-    #Extract and transform
-    players = clean_player_stats()
-
-    #validate
-    validate_player_stats(players)
-
-    #Load
-    players.to_sql(
-        name="player_stats",
-        con=connection,
-        if_exists="replace",
-        index=False,
-    )
-
-    print("✓ player_stats loaded successfully.")
-
 def load_matches(connection: sqlite3.Connection) -> None:
     """
     Load the validated matches DataFrame into SQLite.
@@ -232,6 +206,60 @@ def load_matches(connection: sqlite3.Connection) -> None:
 
     print("✓ matches loaded successfully.")
 
+def load_player_stats(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated player statistics DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading player_stats")
+
+    #Extract and transform
+    players = clean_player_stats()
+
+    #validate
+    validate_player_stats(players)
+
+    #Load
+    players.to_sql(
+        name="player_stats",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+def load_match_team_stats(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated player statistics DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading match_team_stats")
+
+    #Extract and transform
+    match_team_stats = clean_match_team_stats()
+
+    #validate
+    validate_match_team_stats(match_team_stats)
+
+    #Load
+    match_team_stats.to_sql(
+        name="match_team_stats",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ match_team_stats loaded successfully.")
+
 def build_database() -> None:
     """
     Build the SQLite database from the cleaned and validated datasets.
@@ -245,7 +273,9 @@ def build_database() -> None:
         load_tournament_stages(connection)
         load_referees(connection)
         load_squads_and_players(connection)
-        load_player_stats(connection)
         load_matches(connection)
+        load_player_stats(connection)
+        load_match_team_stats(connection)
+
     finally:
         connection.close()

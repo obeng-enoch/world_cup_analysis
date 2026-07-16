@@ -272,6 +272,72 @@ Do not require validation for:
 
 Beyond ensuring they are present, these descriptive text fields do not require additional validation.
 
+---
+
+## matches
+
+### Overview
+
+- Rows: 104
+- Columns: 17
+- Duplicate rows: 0
+- Primary key: `match_id`
+
+### Column Summary
+
+| Column | Observation |
+|--------|-------------|
+| match_id | Unique, no missing values |
+| date | Stored as string; should be converted to datetime |
+| kickoff_time_utc | Stored as string |
+| stage_id | Complete |
+| venue_id | Complete |
+| home_team_id | 2 missing values |
+| away_team_id | 2 missing values |
+| home_score | 4 missing values |
+| away_score | 4 missing values |
+| home_penalty_score | Present only for penalty shootouts |
+| away_penalty_score | Present only for penalty shootouts |
+| status | Complete |
+| result_type | 4 missing values |
+| home_xg | 4 missing values |
+| away_xg | 4 missing values |
+| referee_id | Complete |
+| player_of_the_match_id | 4 missing values |
+
+### Data Quality Findings
+
+- No duplicate rows.
+- `match_id` appears to be a reliable primary key.
+- Missing values in score-related columns appear to correspond to matches that have not yet been played.
+- Penalty score columns are intentionally sparse and should not be treated as missing data errors.
+- Only the `date` column requires transformation during cleaning.
+
+### Cleaning Decisions
+
+- Convert `date` to datetime.
+- Preserve legitimate missing values.
+- No additional transformations required at this stage.
+
+### Validation Decisions
+
+Validate:
+
+- DataFrame is not empty.
+- Required columns exist.
+- `match_id` is unique.
+- Required columns contain no null values.
+
+Do not require values for:
+
+- Scores
+- Penalty scores
+- xG
+- Result type
+- Player of the Match
+
+These fields are legitimately null for future fixtures.
+
 ## player_stats.csv
 
 ### Overview
@@ -346,52 +412,45 @@ Do not require values for:
 
 These fields are legitimately incomplete based on the available source data or player position.
 
----
-
-## matches
+## match_team_stats.csv
 
 ### Overview
 
-- Rows: 104
-- Columns: 17
+- Rows: 200
+- Columns: 12
 - Duplicate rows: 0
-- Primary key: `match_id`
+- Primary key: Composite (`match_id`, `team_id`)
 
 ### Column Summary
 
 | Column | Observation |
-|--------|-------------|
-| match_id | Unique, no missing values |
-| date | Stored as string; should be converted to datetime |
-| kickoff_time_utc | Stored as string |
-| stage_id | Complete |
-| venue_id | Complete |
-| home_team_id | 2 missing values |
-| away_team_id | 2 missing values |
-| home_score | 4 missing values |
-| away_score | 4 missing values |
-| home_penalty_score | Present only for penalty shootouts |
-| away_penalty_score | Present only for penalty shootouts |
-| status | Complete |
-| result_type | 4 missing values |
-| home_xg | 4 missing values |
-| away_xg | 4 missing values |
-| referee_id | Complete |
-| player_of_the_match_id | 4 missing values |
+|---------|-------------|
+| match_id | Complete |
+| team_id | Complete |
+| possession_pct | Complete |
+| total_shots | Complete |
+| shots_on_target | Complete |
+| corners | Complete |
+| fouls | Complete |
+| offsides | Complete |
+| saves | Complete |
+| player_of_the_match | Present for 100 rows; legitimately missing for the corresponding opposing team |
+| data_source | Complete |
+| last_updated | Complete; stored as string and should be converted to datetime |
 
 ### Data Quality Findings
 
 - No duplicate rows.
-- `match_id` appears to be a reliable primary key.
-- Missing values in score-related columns appear to correspond to matches that have not yet been played.
-- Penalty score columns are intentionally sparse and should not be treated as missing data errors.
-- Only the `date` column requires transformation during cleaning.
+- No missing values except for `player_of_the_match`.
+- The combination of `match_id` and `team_id` appears to uniquely identify each record.
+- `player_of_the_match` contains 100 missing values, which appear to be intentional because only one Player of the Match award is recorded per match.
+- `last_updated` is stored as a string and should be converted to datetime during cleaning.
 
 ### Cleaning Decisions
 
-- Convert `date` to datetime.
-- Preserve legitimate missing values.
-- No additional transformations required at this stage.
+- Convert `last_updated` from string to datetime.
+- Preserve legitimate missing values in `player_of_the_match`.
+- No additional transformations required.
 
 ### Validation Decisions
 
@@ -399,15 +458,19 @@ Validate:
 
 - DataFrame is not empty.
 - Required columns exist.
-- `match_id` is unique.
-- Required columns contain no null values.
+- Required columns contain no null values except `player_of_the_match`.
+- The combination of `match_id` and `team_id` is unique.
+- `possession_pct` contains values between 0 and 100.
+- `total_shots` contains non-negative values.
+- `shots_on_target` contains non-negative values.
+- `corners` contains non-negative values.
+- `fouls` contains non-negative values.
+- `offsides` contains non-negative values.
+- `saves` contains non-negative values.
+- `last_updated` is successfully converted to datetime.
 
 Do not require values for:
 
-- Scores
-- Penalty scores
-- xG
-- Result type
-- Player of the Match
+- `player_of_the_match`
 
-These fields are legitimately null for future fixtures.
+This field is legitimately missing for one team in each match because only a single Player of the Match award is assigned.

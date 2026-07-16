@@ -20,8 +20,9 @@ TABLES = [
     "tournament_stages",
     "referees",
     "squads_and_players",
-    "player_stats",
     "matches",
+    "player_stats",
+    "match_team_stats"
 ]
 
 # Registering every table here
@@ -31,15 +32,17 @@ CSV_FILES = {
     "tournament_stages": RAW_DATA_DIR / "tournament_stages.csv",
     "referees": RAW_DATA_DIR / "referees.csv",
     "squads_and_players": RAW_DATA_DIR / "squads_and_players.csv",
-    "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "matches": RAW_DATA_DIR / "matches.csv",
+    "player_stats": RAW_DATA_DIR / "player_stats.csv",
+    "match_team_stats": RAW_DATA_DIR / "match_team_stats.csv",
 }
 
 # Date columns that should be converted to datetime during the cleaning step.
 DATE_COLUMNS = {
-    "player_stats": ["last_verified"],
     "squads_and_players": ["date_of_birth"],
     "matches": ["date"],
+    "player_stats": ["last_verified"],
+    "match_team_stats": ["last_updated"]
 }
 
 REQUIRED_COLUMNS = {
@@ -91,14 +94,6 @@ REQUIRED_COLUMNS = {
         "goals",
     ],
 
-    "player_stats": [
-        "player_id",
-        "player_name",
-        "team_id",
-        "goals",
-        "last_verified",
-    ],
-
     "matches": [
         "match_id",
         "date",
@@ -107,4 +102,26 @@ REQUIRED_COLUMNS = {
         "status",
         "referee_id",
     ],
+
+    "player_stats": [
+        "player_id",
+        "player_name",
+        "team_id",
+        "goals",
+        "last_verified",
+    ],
+
+    "match_team_stats": [
+        "match_id",
+        "team_id",
+        "possession_pct",
+        "total_shots",
+        "shots_on_target",
+        "corners",
+        "fouls",
+        "offsides",
+        "saves",
+        "data_source",
+        "last_updated"
+    ]
 }

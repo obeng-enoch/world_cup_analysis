@@ -149,6 +149,25 @@ def clean_squads_and_players() -> pd.DataFrame:
 
     return squads_and_players
 
+def clean_matches() -> pd.DataFrame:
+    """
+    Load and clean the matches dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned matches DataFrame.
+    """
+
+    matches = load_csv("matches")
+
+    matches = convert_dates(
+        matches,
+        DATE_COLUMNS["matches"]
+    )
+
+    return matches
+
 def clean_player_stats() -> pd.DataFrame:
     """
     Load and clean the player statistics dataset.
@@ -168,21 +187,21 @@ def clean_player_stats() -> pd.DataFrame:
 
     return player_stats
 
-def clean_matches() -> pd.DataFrame:
+def clean_match_team_stats() -> pd.DataFrame:
     """
-    Load and clean the matches dataset.
-
+    Load and clean the match team statistics dataset.
+    
     Returns
     -------
     pd.DataFrame
-        Cleaned matches DataFrame.
+        Cleaned match team statistics DataFrame.
     """
 
-    matches = load_csv("matches")
+    match_team_stats = load_csv("match_team_stats")
 
-    matches = convert_dates(
-        matches,
-        DATE_COLUMNS["matches"]
+    match_team_stats = convert_dates(
+        match_team_stats,
+        DATE_COLUMNS["match_team_stats"]
     )
 
-    return matches
+    return match_team_stats

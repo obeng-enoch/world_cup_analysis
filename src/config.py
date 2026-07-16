@@ -19,6 +19,7 @@ TABLES = [
     "venues",
     "tournament_stages",
     "referees",
+    "squads_and_players",
     "player_stats",
     "matches",
 ]
@@ -29,6 +30,7 @@ CSV_FILES = {
     "venues": RAW_DATA_DIR / "venues.csv",
     "tournament_stages": RAW_DATA_DIR / "tournament_stages.csv",
     "referees": RAW_DATA_DIR / "referees.csv",
+    "squads_and_players": RAW_DATA_DIR / "squads_and_players.csv",
     "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "matches": RAW_DATA_DIR / "matches.csv",
 }
@@ -36,6 +38,7 @@ CSV_FILES = {
 # Date columns that should be converted to datetime during the cleaning step.
 DATE_COLUMNS = {
     "player_stats": ["last_verified"],
+    "squads_and_players": ["date_of_birth"],
     "matches": ["date"],
 }
 
@@ -73,6 +76,19 @@ REQUIRED_COLUMNS = {
         "name",
         "country",
         "avg_cards_per_game",
+    ],
+
+    "squads_and_players": [
+        "player_id",
+        "team_id",
+        "player_name",
+        "position",
+        "club_team",
+        "market_value_eur",
+        "caps",
+        "date_of_birth",
+        "height_cm",
+        "goals",
     ],
 
     "player_stats": [

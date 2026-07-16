@@ -130,6 +130,25 @@ def clean_referees() -> pd.DataFrame:
 
     return referees
 
+def clean_squads_and_players() -> pd.DataFrame:
+    """
+    Load and clean squads and players dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Clean squads and players statistics DataFrame.
+    """
+
+    squads_and_players = load_csv("squads_and_players")
+
+    squads_and_players = convert_dates(
+        squads_and_players,
+        DATE_COLUMNS["squads_and_players"]
+    )
+
+    return squads_and_players
+
 def clean_player_stats() -> pd.DataFrame:
     """
     Load and clean the player statistics dataset.

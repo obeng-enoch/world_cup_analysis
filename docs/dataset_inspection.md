@@ -211,6 +211,67 @@ Do not require validation for:
 
 Beyond ensuring they are present, these descriptive text fields do not require additional validation.
 
+## squads_and_players.csv
+
+### Overview
+
+- Rows: 1248
+- Columns: 10
+- Duplicate rows: 0
+- Primary key: `player_id`
+
+### Column Summary
+
+| Column | Observation |
+|---------|-------------|
+| player_id | Unique, no missing values |
+| team_id | Complete |
+| player_name | Complete |
+| position | Complete |
+| club_team | Complete |
+| market_value_eur | Complete, stored as integer values |
+| caps | Complete, stored as integer values |
+| date_of_birth | Complete; currently stored as string and should be converted to datetime |
+| height_cm | Complete, stored as integer values |
+| goals | Complete, stored as integer values |
+
+### Data Quality Findings
+
+- No missing values.
+- No duplicate rows.
+- Data types are appropriate for all columns except `date_of_birth`, which is stored as a string.
+- `player_id` appears to be a reliable primary key.
+- Numeric player attributes (`market_value_eur`, `caps`, `height_cm`, and `goals`) are complete and contain no missing values.
+- No structural cleaning issues were identified during inspection.
+
+### Cleaning Decisions
+
+- Convert `date_of_birth` from string to datetime.
+- Preserve all remaining values and data types.
+- No additional transformations required.
+
+### Validation Decisions
+
+Validate:
+
+- DataFrame is not empty.
+- Required columns exist.
+- `player_id` is unique.
+- Required columns contain no null values.
+- `market_value_eur` contains non-negative values.
+- `caps` contains non-negative values.
+- `height_cm` contains positive values.
+- `goals` contains non-negative values.
+- `date_of_birth` is successfully converted to datetime.
+
+Do not require validation for:
+
+- `player_name`
+- `position`
+- `club_team`
+
+Beyond ensuring they are present, these descriptive text fields do not require additional validation.
+
 ## player_stats.csv
 
 ### Overview

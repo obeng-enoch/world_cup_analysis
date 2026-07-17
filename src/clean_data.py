@@ -1,5 +1,3 @@
-from ast import Return
-
 import pandas as pd
 from src.config import CSV_FILES, DATE_COLUMNS
 
@@ -205,3 +203,17 @@ def clean_match_team_stats() -> pd.DataFrame:
     )
 
     return match_team_stats
+
+def clean_match_events() -> pd.DataFrame:
+    """
+    Load and clean the match events statistics dataset.
+    
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned match events statistics DataFrame.
+    """
+
+    match_events = load_csv("match_events")
+
+    return match_events

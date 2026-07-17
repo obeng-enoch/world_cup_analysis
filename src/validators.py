@@ -477,7 +477,7 @@ def validate_player_stats(df: pd.DataFrame) -> bool:
 
 def validate_match_team_stats(df: pd.DataFrame) -> bool:
     """
-    Validate the cleaned matche team statistics DataFrame.
+    Validate the cleaned match team statistics DataFrame.
     
     Parameters
     ----------
@@ -529,56 +529,129 @@ def validate_match_team_stats(df: pd.DataFrame) -> bool:
             f"{columns_with_missing_values}"
         )
     
-    # Check 4: match_id and team_id are unique
+    # Check 4: match_id and team_id must be unique
     if df.duplicated(
         subset=["match_id", "team_id"]
     ).any():
         raise ValueError(
-            "Duplicate player_id values found."
+            "Duplicate match/team combinations found."
         )
     
-    # Check 5: possession percentage must be between 0 and 100
-    if not df["possession_pct"].between(0,100).all():
+    # Check 5: percentage percentage should be between 0 and 100
+    if not df["possession_pct"].between(0, 100).all():
         raise ValueError(
             "possession_pct must be between 0 and 100."
         )
     
-    # Check 6: Total shots shouldn't be less than 0
+    # Check 6: shots shouldn't be negative
     if (df["total_shots"] < 0).any():
         raise ValueError(
             "total_shots cannot contain negative values."
-    )
-
-    # Check 7: Corners shouldn't be negative
-    if (df["corners"] < 0).any():
+        )
+    
+    # Check 7: coners shouldn't be negative
+    if(df["corners"] < 0).any():
         raise ValueError(
             "corners cannot contain negative values."
-    )
-
-    # Check 8: Fouls shoudn't be negative
+        )
+    
+    # Check 8: fouls shouldn't be negative
     if (df["fouls"] < 0).any():
         raise ValueError(
             "fouls cannot contain negative values."
-    )
-
-    # Check 9: Offsides shouldn't be negative
+        )
+    
+    # Check 9: offsides shouldn't be negative
     if (df["offsides"] < 0).any():
         raise ValueError(
             "offsides cannot contain negative values."
-    )
-
-    # Check 10: Saves shouldn't be negative
+        )
+    
+    # Check 10: saves shouldn't be negative
     if (df["saves"] < 0).any():
         raise ValueError(
             "saves cannot contain negative values."
-    )
+        )
 
-    # Check 11: Making sure the last_updated is in datetime format
+    # Check 11: last_updated should be datetime data type
     if not pd.api.types.is_datetime64_any_dtype(
         df["last_updated"]
 ):
         raise ValueError(
             "last_updated must be a datetime column."
-    )
+        )
+    
+    return True
 
+def validate_match_events(df: pd.DataFrame) -> bool:
+    """
+    Validate the cleaned matche events statistics DataFrame.
+    
+    Parameters
+    ----------
+    df :pd.DataFrame
+        Cleaned match events Statistics.
+        
+    Returns
+    -------
+    bool
+        True if all validation checks pass.
+
+    Raises
+    ------
+    ValueError
+        If the DataFrame is empty, contains duplicate match and team IDS,
+        or has missing values in required columns.
+    KeyError
+        If required columns are missing.
+    """
+
+    required_columns = REQUIRED_COLUMNS["match_events"]
+    
+    # Check 1: DataFrame is not empty
+    if df.empty:
+        raise ValueError("Match events statistics dataset is empty.")
+    
+    # Check 2: Required columns exist
+    missing_columns = [
+        column
+        for column in required_columns
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise KeyError(
+            f"Missing required columns: {missing_columns}"
+        )
+    
+    # Check 3: Required fields contain no missing values
+    missing_values = df[required_columns].isnull().any()
+
+    columns_with_missing_values = missing_values[
+        missing_values
+    ].index.tolist()
+
+    if columns_with_missing_values:
+        raise ValueError(
+            f"Missing values found in required columns: "
+            f"{columns_with_missing_values}"
+        )
+    
+    # Check 4: event_id is unique
+    if not df["event_id"].is_unique:
+        raise ValueError(
+            "Duplicate event_id values found."
+        )
+    # Check 5: minute datatype should be string
+    if not pd.api.types.is_string_dtype(df["minute"]):
+        raise ValueError(
+            "minute must be stored as string"
+        )
+    
+    # Check 6: event_type missing values
+    if df["event_type"].isna().any():
+        raise ValueError(
+            "event_type contains missing values"
+        )
+    
     return True

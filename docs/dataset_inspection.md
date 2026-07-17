@@ -474,3 +474,56 @@ Do not require values for:
 - `player_of_the_match`
 
 This field is legitimately missing for one team in each match because only a single Player of the Match award is assigned.
+
+## match_events.csv
+
+### Overview
+
+* Rows: 790
+* Columns: 6
+* Duplicate rows: 0
+* Primary key: `event_id`
+
+### Column Summary
+
+| Column     | Observation                                                                            |
+| ---------- | -------------------------------------------------------------------------------------- |
+| event_id   | Complete; unique identifier for each match event                                       |
+| match_id   | Complete; references the corresponding match                                           |
+| minute     | Complete; stored as string to preserve football minute notation (e.g., `45+2`, `90+5`) |
+| event_type | Complete; categorical field describing the type of match event                         |
+| team_id    | Complete; references the team associated with the event                                |
+| player_id  | Complete; references the player involved in the event                                  |
+
+### Data Quality Findings
+
+* No duplicate rows.
+* No missing values were found in any column.
+* `event_id` appears to uniquely identify each record.
+* `minute` is stored as a string rather than a numeric data type. This is intentional because football event times may include stoppage-time notation (e.g., `45+2`, `90+5`), which should not be converted to integers.
+* `event_type` is a categorical field containing different types of match events (e.g., Goal, Yellow Card, Red Card, VAR Review).
+* Multiple events may occur in the same match, involve the same player, or occur in the same minute. These are expected characteristics of football match event data and do not represent data quality issues.
+
+### Cleaning Decisions
+
+* Preserve the `minute` column as a string.
+* No datetime conversion is required.
+* No missing values require handling.
+* No duplicate rows require removal.
+* No additional transformations are required.
+
+### Validation Decisions
+
+Validate:
+
+* DataFrame is not empty.
+* Required columns exist.
+* Required columns contain no null values.
+* `event_id` is unique.
+* `minute` is stored as a string/object data type.
+* `event_type` contains no missing values.
+* `match_id` contains valid values.
+* `team_id` contains valid values.
+* `player_id` contains valid values.
+
+Do not allow missing values for any column.

@@ -10,7 +10,8 @@ from src.clean_data import (
     clean_squads_and_players,
     clean_matches,
     clean_player_stats,
-    clean_match_team_stats
+    clean_match_team_stats,
+    clean_match_events,
 )
 
 from src.validators import (
@@ -21,7 +22,8 @@ from src.validators import (
     validate_squads_and_players,
     validate_matches,
     validate_player_stats,
-    validate_match_team_stats
+    validate_match_team_stats,
+    validate_match_events,
 )
 
 def get_database_connection() -> sqlite3.Connection:
@@ -232,9 +234,11 @@ def load_player_stats(connection: sqlite3.Connection) -> None:
         index=False,
     )
 
+    print("✓ player_stats loaded successfully.")
+
 def load_match_team_stats(connection: sqlite3.Connection) -> None:
     """
-    Load the validated player statistics DataFrame into SQLite.
+    Load the validated match team stats statistics DataFrame into SQLite.
     
     Parameters
     ----------
@@ -260,6 +264,34 @@ def load_match_team_stats(connection: sqlite3.Connection) -> None:
 
     print("✓ match_team_stats loaded successfully.")
 
+def load_match_events(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated match events statistics DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading match_events")
+
+    #Extract and transform
+    match_events = clean_match_events()
+
+    #validate
+    validate_match_events(match_events)
+
+    #Load
+    match_events.to_sql(
+        name="match_events",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ match_events loaded successfully.")
+
 def build_database() -> None:
     """
     Build the SQLite database from the cleaned and validated datasets.
@@ -276,6 +308,7 @@ def build_database() -> None:
         load_matches(connection)
         load_player_stats(connection)
         load_match_team_stats(connection)
+        load_match_events(connection)
 
     finally:
         connection.close()

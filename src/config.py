@@ -23,6 +23,7 @@ TABLES = [
     "matches",
     "player_stats",
     "match_team_stats"
+    "match_events"
 ]
 
 # Registering every table here
@@ -35,6 +36,7 @@ CSV_FILES = {
     "matches": RAW_DATA_DIR / "matches.csv",
     "player_stats": RAW_DATA_DIR / "player_stats.csv",
     "match_team_stats": RAW_DATA_DIR / "match_team_stats.csv",
+    "match_events": RAW_DATA_DIR / "match_events.csv",
 }
 
 # Date columns that should be converted to datetime during the cleaning step.
@@ -42,7 +44,7 @@ DATE_COLUMNS = {
     "squads_and_players": ["date_of_birth"],
     "matches": ["date"],
     "player_stats": ["last_verified"],
-    "match_team_stats": ["last_updated"]
+    "match_team_stats": ["last_updated"],
 }
 
 REQUIRED_COLUMNS = {
@@ -123,5 +125,14 @@ REQUIRED_COLUMNS = {
         "saves",
         "data_source",
         "last_updated"
-    ]
+    ],
+
+    "match_events": [
+        "event_id",
+        "match_id",
+        "minute",
+        "event_type",
+        "team_id",
+        "player_id"
+    ],
 }

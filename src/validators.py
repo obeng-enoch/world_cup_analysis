@@ -655,3 +655,88 @@ def validate_match_events(df: pd.DataFrame) -> bool:
         )
     
     return True
+
+def validate_match_lineups(df: pd.DataFrame) -> bool:
+    """
+    Validate the cleaned match_lineups DataFrame.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Cleaned match_lineups DataFrame.
+        
+    Returns
+    -------
+    bool
+        True if all validation checks pass.
+
+    Raises
+    ------
+    ValueError
+        If the DataFrame is empty, contains duplicate lineup IDs,
+        is_starting_xi contains only valid binary values (0 or 1),
+        minutes_played is between 0 and 120, tactical position contains no missing vales.
+    KeyError
+        If required columns are missing.
+    """
+
+    required_columns = REQUIRED_COLUMNS["match_lineups"]
+
+    # Check 1: DataFrame is not empty
+    if df.empty:
+        raise ValueError("Match_lineups dataset is empty.")
+    
+    # Check 2: Required columns exist
+    missing_columns = [
+        column
+        for column in required_columns
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise KeyError(
+            f"Missing required columns: {missing_columns}"
+        )
+    
+    # Check 3: Required fields contain no null values
+    missing_values = df[required_columns].isnull().any()
+
+    columns_with_missing_values = missing_values[
+        missing_values
+    ].index.tolist()
+
+    if columns_with_missing_values:
+        raise ValueError(
+            "Missing values found in required columns: "
+            f"{columns_with_missing_values}"
+        )
+
+    # Check 4: lineup_id is unique
+    if not df["lineup_id"].is_unique:
+        raise ValueError("Duplicate lineup_id values found.")
+    
+    # Check 4: lineup_id is unique
+    if not df["lineup_id"].is_unique:
+        raise ValueError(
+            "Duplicate lineup_id values found."
+        )
+
+    # Check 5: is_starting_xi contains only valid binary values
+    if not df["is_starting_xi"].isin([0, 1]).all():
+        raise ValueError(
+            "is_starting_xi must contain only 0 or 1."
+        )
+
+    # Check 6: minutes_played is non-negative
+    if (df["minutes_played"] < 0).any():
+        raise ValueError(
+            "minutes_played cannot contain negative values."
+        )
+
+    # Check 7: minutes_played does not exceed 120
+    if (df["minutes_played"] > 120).any():
+        raise ValueError(
+            "minutes_played cannot exceed 120 minutes."
+        )
+    
+    return True

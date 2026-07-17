@@ -12,6 +12,7 @@ from src.clean_data import (
     clean_player_stats,
     clean_match_team_stats,
     clean_match_events,
+    clean_match_lineups,
 )
 
 from src.validators import (
@@ -24,6 +25,7 @@ from src.validators import (
     validate_player_stats,
     validate_match_team_stats,
     validate_match_events,
+    validate_match_lineups,
 )
 
 def get_database_connection() -> sqlite3.Connection:
@@ -292,6 +294,34 @@ def load_match_events(connection: sqlite3.Connection) -> None:
 
     print("✓ match_events loaded successfully.")
 
+def load_match_lineups(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated match lineups statistics DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading match_lineups")
+
+    #Extract and transform
+    match_lineups = clean_match_lineups()
+
+    #validate
+    validate_match_lineups(match_lineups)
+
+    #Load
+    match_lineups.to_sql(
+        name="match_lineups",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ match_lineups loaded successfully.")
+
 def build_database() -> None:
     """
     Build the SQLite database from the cleaned and validated datasets.
@@ -309,6 +339,7 @@ def build_database() -> None:
         load_player_stats(connection)
         load_match_team_stats(connection)
         load_match_events(connection)
+        load_match_lineups(connection)
 
     finally:
         connection.close()

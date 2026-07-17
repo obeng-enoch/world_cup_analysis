@@ -527,3 +527,58 @@ Validate:
 * `player_id` contains valid values.
 
 Do not allow missing values for any column.
+
+## match_lineups.csv
+
+### Overview
+
+- Rows: 5200
+- Columns: 7
+- Duplicate rows: 0
+- Primary key: `lineup_id`
+
+### Column Summary
+
+| Column | Observation |
+|---------|-------------|
+| lineup_id | Complete; unique identifier for each lineup record |
+| match_id | Complete; references the corresponding match |
+| player_id | Complete; references the player included in the lineup |
+| team_id | Complete; references the team associated with the player |
+| is_starting_xi | Complete; binary indicator showing whether the player started the match |
+| tactical_position | Complete; categorical field describing the player's tactical position |
+| minutes_played | Complete; numeric field representing the number of minutes played by the player |
+
+### Data Quality Findings
+
+- No duplicate rows.
+- No missing values were found in any column.
+- `lineup_id` appears to uniquely identify each lineup record.
+- `match_id`, `player_id`, and `team_id` contain complete values and can be used to establish relationships with other tables.
+- `is_starting_xi` is stored as an integer field and represents a binary value indicating whether a player was part of the starting XI.
+- `tactical_position` is stored as a string field containing player positions such as goalkeeper, defender, and other tactical roles.
+- `minutes_played` contains values ranging from 0 to 120, which is expected because matches can include extra time.
+- Multiple records per match are expected because each match contains multiple players across both teams.
+
+### Cleaning Decisions
+
+- Preserve the `is_starting_xi` column as an integer because it represents a binary indicator.
+- Preserve the `tactical_position` column as text because it contains categorical position information.
+- No missing values require handling.
+- No duplicate rows require removal.
+- No additional transformations are currently required.
+
+### Validation Decisions
+
+Validate:
+
+- DataFrame is not empty.
+- Required columns exist.
+- Required columns contain no null values.
+- `lineup_id` is unique.
+- `is_starting_xi` contains only valid binary values (0 or 1).
+- `minutes_played` contains non-negative values.
+- `minutes_played` does not exceed 120 minutes.
+- `tactical_position` contains no missing values.
+
+No columns are expected to contain legitimate missing values.

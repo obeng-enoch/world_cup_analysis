@@ -217,3 +217,17 @@ def clean_match_events() -> pd.DataFrame:
     match_events = load_csv("match_events")
 
     return match_events
+
+def clean_match_lineups() -> pd.DataFrame:
+    """
+    Load and clean the match_lineups dataset.
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned match_lineups DataFrame.
+    """
+
+    match_lineups = load_csv("match_lineups")
+
+    return match_lineups

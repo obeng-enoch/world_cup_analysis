@@ -9,6 +9,7 @@ CLEANED_DATA_DIR = PROJECT_ROOT / "data" / "cleaned"
 
 # Database directory
 DATABASE_DIR = PROJECT_ROOT / "database"
+DATABASE_DIR.mkdir(parents=True, exist_ok=True)
 
 # SQLITE database
 DATABASE_PATH = DATABASE_DIR / "world_cup_2026.db"
@@ -22,7 +23,7 @@ TABLES = [
     "squads_and_players",
     "matches",
     "player_stats",
-    "match_team_stats"
+    "match_team_stats",
     "match_events",
     "match_lineups.csv",
 ]

@@ -36,24 +36,7 @@ ORDER BY
     ps.minutes_played ASC
 LIMIT 10;
 
--- 2. goals per 90 minutes
-SELECT
-	ps.player_name,
-	t.fifa_code AS team,
-	ps.goals,
-	ps.minutes_played,
-	ROUND(CASE
-		WHEN ps.minutes_played > 0 THEN (ps.goals * 90.0) / ps.minutes_played
-		ELSE 0
-	END, 2) AS goals_per_90
-FROM player_stats AS ps
-JOIN teams AS t
-	ON ps.team_id = t.team_id
-WHERE minutes_played > 0 AND goals > 0
-ORDER BY goals_per_90 DESC, goals DESC
-LIMIT 10;
-
--- 3. players who scored hat-tricks
+-- 2. players who scored hat-tricks
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -86,7 +69,7 @@ ORDER BY
     goals DESC,
     ps.player_name;
 
--- 4. multi-goals matches(2+ goals)
+-- 3. multi-goals matches(2+ goals)
 SELECT
 	ps.player_name,
 	t.fifa_code AS team,
@@ -123,7 +106,7 @@ ORDER BY
 -- SECTION A — SCORING
 -- ==========================================================
 
--- 5) Penalty goals
+-- 4. penalty goals
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -141,7 +124,7 @@ ORDER BY
     ps.minutes_played ASC
 LIMIT 10;
 
--- 6) Own goals
+--5. Own goals
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -161,7 +144,7 @@ LIMIT 10;
 -- SECTION B — CREATIVITY
 -- ==========================================================
 
--- 7) Top assist providers
+-- 6. Top assist providers
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -179,7 +162,7 @@ ORDER BY
     ps.minutes_played ASC
 LIMIT 10;
 
--- 8) Goal contributions (Goals + Assists)
+-- 7. Goal contributions (Goals + Assists)
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -198,32 +181,11 @@ ORDER BY
     ps.assists DESC
 LIMIT 10;
 
--- 9) Goal contributions per 90
-SELECT
-    ps.player_name,
-    t.fifa_code AS team,
-    ps.goals,
-    ps.assists,
-    (ps.goals + ps.assists) AS goal_contributions,
-    ps.minutes_played,
-    ROUND(CASE
-        WHEN ps.minutes_played > 0 THEN ((ps.goals + ps.assists) * 90.0) / ps.minutes_played
-        ELSE 0
-    END, 2) AS goal_contributions_per_90
-FROM player_stats AS ps
-JOIN teams AS t
-    ON ps.team_id = t.team_id
-WHERE ps.minutes_played > 0 AND (ps.goals + ps.assists) > 0
-ORDER BY
-    goal_contributions_per_90 DESC,
-    goal_contributions DESC
-LIMIT 10;
-
 -- ==========================================================
 -- SECTION C — PLAYING TIME
 -- ==========================================================
 
--- 10) Most appearances
+-- 8. Most appearances
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -239,7 +201,7 @@ ORDER BY
     ps.minutes_played DESC
 LIMIT 10;
 
--- 11) Most starts
+-- 9. Most starts
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -255,7 +217,7 @@ ORDER BY
     ps.minutes_played DESC
 LIMIT 10;
 
--- 12) Most minutes played
+-- 10. Most minutes played
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -275,7 +237,7 @@ LIMIT 10;
 -- SECTION D — DISCIPLINE
 -- ==========================================================
 
--- 13) Most yellow cards
+-- 11. Most yellow cards
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -293,7 +255,7 @@ ORDER BY
     ps.minutes_played ASC
 LIMIT 10;
 
--- 14) Most red cards
+-- 12. Most red cards
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -315,7 +277,7 @@ LIMIT 10;
 -- SECTION E — GOALKEEPING
 -- ==========================================================
 
--- 15) Most clean sheets
+-- 13. Most clean sheets
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -335,7 +297,7 @@ ORDER BY
     ps.minutes_played DESC
 LIMIT 10;
 
--- 16) Most saves
+-- 14. Most saves
 SELECT
     ps.player_name,
     t.fifa_code AS team,
@@ -355,7 +317,7 @@ ORDER BY
     ps.minutes_played DESC
 LIMIT 10;
 
--- 17) Lowest goals conceded (minimum minutes threshold)
+-- 15. Lowest goals conceded (minimum minutes threshold)
 SELECT
     ps.player_name,
     t.fifa_code AS team,

@@ -122,21 +122,6 @@ ORDER BY m.date ASC;
 -- SECTION C — MATCH OUTCOMES UNDER REFEREE
 -- ==========================================================
 
--- 5) Average goals per match by referee
-SELECT
-    r.name AS referee,
-    r.country,
-    COUNT(*) AS matches_officiated,
-    SUM(m.home_score + m.away_score) AS total_goals,
-    ROUND(AVG(m.home_score + m.away_score), 2) AS avg_goals_per_match
-FROM matches AS m
-JOIN referees AS r
-    ON m.referee_id = r.referee_id
-WHERE m.status = 'Completed'
-GROUP BY r.referee_id, r.name, r.country
-ORDER BY avg_goals_per_match DESC
-LIMIT 10;
-
 -- 6) Average fouls per match by referee
 SELECT
     r.name AS referee,
@@ -165,7 +150,6 @@ LIMIT 10;
 SELECT
     r.name AS referee,
     ts.stage_name AS stage,
-    ts.is_knockout,
     COUNT(*) AS matches_officiated
 FROM matches AS m
 JOIN referees AS r

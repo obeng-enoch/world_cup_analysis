@@ -40,7 +40,13 @@ LIMIT 10;
 SELECT
     ps.player_name,
     t.fifa_code AS team,
-    ht.fifa_code || ' VS ' || at.fifa_code AS match,
+    ht.fifa_code
+    || ' '
+    || CAST(m.home_score AS INTEGER)
+    || '–'
+    || CAST(m.away_score AS INTEGER)
+    || ' '
+    || at.fifa_code AS match,
     ts.stage_name AS stage,
     COUNT(*) AS goals
 FROM match_events AS me
@@ -69,11 +75,17 @@ ORDER BY
     goals DESC,
     ps.player_name;
 
--- 3. multi-goals matches(2+ goals)
+-- 3. multi-goals matches(2+ goals)  Will add scoreline to this
 SELECT
 	ps.player_name,
 	t.fifa_code AS team,
-	ht.fifa_code || ' VS ' || at.fifa_code AS match,
+	ht.fifa_code
+    || ' '
+    || CAST(m.home_score AS INTEGER)
+    || '–'
+    || CAST(m.away_score AS INTEGER)
+    || ' '
+    || at.fifa_code AS match,
 	ts.stage_name AS stage,
 	COUNT(*) AS goals
 FROM match_events AS me
@@ -106,23 +118,20 @@ ORDER BY
 -- SECTION A — SCORING
 -- ==========================================================
 
--- 4. penalty goals
+-- 4. penalty goals  Will remove goals, matches and mintutes and add the scoreline for the day
 SELECT
     ps.player_name,
     t.fifa_code AS team,
     ps.penalty_goals,
-    ps.goals,
-    ps.matches_played,
-    ps.minutes_played
+    ps.goals
 FROM player_stats AS ps
 JOIN teams AS t
     ON ps.team_id = t.team_id
 WHERE ps.penalty_goals > 0
 ORDER BY
-    ps.penalty_goals DESC,
-    ps.goals DESC,
-    ps.minutes_played ASC
+    ps.penalty_goals DESC
 LIMIT 10;
+
 
 --5. Own goals
 SELECT

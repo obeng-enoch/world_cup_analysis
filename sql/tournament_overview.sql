@@ -21,24 +21,8 @@ FROM squads_and_players;
 SELECT COUNT(*) AS total_matches
 FROM matches;
 
--- KPI 5: Completed Matches
-SELECT COUNT(*) AS completed_matches
-FROM matches
-WHERE status = 'Completed';
-
--- KPI 6: Upcoming Matches
-SELECT COUNT(*) AS upcoming_matches
-FROM matches
-WHERE status <> 'Completed';
-
--- KPI 7: Total Goals
+-- KPI 6: Total Goals
 SELECT
     SUM(home_score + away_score) AS total_goals
-FROM matches
-WHERE status = 'Completed';
-
--- KPI 8: Average Goals Per Match
-SELECT
-    ROUND(AVG(home_score + away_score), 2) AS average_goals_per_match
 FROM matches
 WHERE status = 'Completed';

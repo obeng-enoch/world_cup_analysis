@@ -96,33 +96,3 @@ WHERE me.event_type IN ('Yellow Card', 'Red Card')
 GROUP BY ps.player_name, t.fifa_code, m.match_id, m.date
 HAVING COUNT(*) > 1
 ORDER BY cards_in_match DESC;
-
-
--- ==========================================================
--- SECTION D — OWN GOALS
--- ==========================================================
-
--- 7) Own goal log
-SELECT
-    m.match_id,
-    m.date,
-    ts.stage_name AS stage,
-    ps.player_name,
-    t.fifa_code AS team,
-    me.minute,
-    ht.fifa_code || ' VS ' || at.fifa_code AS match
-FROM match_events AS me
-JOIN matches AS m
-    ON me.match_id = m.match_id
-JOIN tournament_stages AS ts
-    ON m.stage_id = ts.stage_id
-JOIN teams AS t
-    ON me.team_id = t.team_id
-JOIN teams AS ht
-    ON m.home_team_id = ht.team_id
-JOIN teams AS at
-    ON m.away_team_id = at.team_id
-JOIN player_stats AS ps
-    ON me.player_id = ps.player_id
-WHERE me.event_type = 'Own Goal'
-ORDER BY m.date ASC;

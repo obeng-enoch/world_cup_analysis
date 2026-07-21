@@ -20,7 +20,7 @@
 -- ==========================================================
 
 -- ==========================================================
--- 1) Full Match Schedule
+-- 1) Full Match Schedule   
 -- ==========================================================
 SELECT
     ht.fifa_code
@@ -33,8 +33,7 @@ SELECT
     DATE(m.date) AS match_date,
     ts.stage_name AS stage,
     v.stadium_name,
-    v.city,
-    m.status
+    v.city
 FROM matches m
 
 JOIN teams ht
@@ -65,8 +64,6 @@ SELECT
     || CAST(m.away_score AS INTEGER)
     || ' '
     || at.fifa_code AS match,
-
-    DATE(m.date) AS match_date,
 
     ts.stage_name AS stage,
 
@@ -104,8 +101,6 @@ SELECT
     || CAST(m.away_score AS INTEGER)
     || ' '
     || at.fifa_code AS match,
-
-    DATE(m.date) AS match_date,
 
     ts.stage_name AS stage,
 
@@ -203,9 +198,6 @@ SELECT
     ts.stage_name AS stage,
 
     DATE(m.date) AS match_date
-
-    
-
 
 FROM matches m
 
@@ -325,7 +317,6 @@ ORDER BY matches_hosted DESC, avg_goals_per_match DESC;
 -- 11) Matches and goals per stage
 SELECT
     ts.stage_name AS stage,
-    ts.is_knockout,
     COUNT(*) AS matches_played,
     SUM(m.home_score + m.away_score) AS total_goals,
     ROUND(AVG(m.home_score + m.away_score), 2) AS avg_goals_per_match
@@ -336,39 +327,27 @@ WHERE m.status = 'Completed'
 GROUP BY ts.stage_id, ts.stage_name, ts.is_knockout
 ORDER BY ts.stage_id ASC;
 
--- ==========================================================
--- SECTION E — EXPECTED GOALS (xG)
--- ==========================================================
-
--- 12) Matches with the biggest gap between actual goals and combined xG
-SELECT
-    m.match_id,
-    m.date,
-    ts.stage_name AS stage,
-    ht.fifa_code || ' ' || m.home_score || '-' || m.away_score || ' ' || at.fifa_code AS scoreline,
-    ROUND(m.home_xg + m.away_xg, 2) AS combined_xg,
-    (m.home_score + m.away_score) AS actual_goals,
-    ROUND((m.home_score + m.away_score) - (m.home_xg + m.away_xg), 2) AS xg_delta
-FROM matches AS m
-JOIN teams AS ht
-    ON m.home_team_id = ht.team_id
-JOIN teams AS at
-    ON m.away_team_id = at.team_id
-JOIN tournament_stages AS ts
-    ON m.stage_id = ts.stage_id
-WHERE m.status = 'Completed'
-ORDER BY ABS((m.home_score + m.away_score) - (m.home_xg + m.away_xg)) DESC
-LIMIT 10;
 
 -- 13) Most/least possession-dominant matches
 SELECT
-    m.match_id,
-    m.date,
-    ht.fifa_code AS home_team,
-    home_stats.possession_pct AS home_possession_pct,
-    at.fifa_code AS away_team,
-    away_stats.possession_pct AS away_possession_pct,
+    ht.fifa_code
+    || ' '
+    || CAST(m.home_score AS INTEGER)
+    || '–'
+    || CAST(m.away_score AS INTEGER)
+    || ' '
+    || at.fifa_code AS match,
+
+    ht.fifa_code
+    || ' '
+    || CAST(home_stats.possession_pct AS INTEGER)
+    || '–'
+    || CAST(away_stats.possession_pct AS INTEGER)
+    || ' '
+    || at.fifa_code AS possession,
+
     ABS(home_stats.possession_pct - away_stats.possession_pct) AS possession_gap
+
 FROM matches AS m
 JOIN teams AS ht
     ON m.home_team_id = ht.team_id

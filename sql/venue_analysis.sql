@@ -37,7 +37,6 @@ ORDER BY v.capacity DESC;
 SELECT
     v.country,
     v.city,
-    COUNT(DISTINCT v.venue_id) AS venues_used,
     COUNT(m.match_id) AS matches_hosted
 FROM venues AS v
 JOIN matches AS m
@@ -69,7 +68,6 @@ LIMIT 10;
 -- 4) Highest-scoring single match per venue
 SELECT
     v.stadium_name,
-    m.match_id,
     m.date,
     ht.fifa_code || ' ' || m.home_score || '-' || m.away_score || ' ' || at.fifa_code AS scoreline,
     (m.home_score + m.away_score) AS total_goals
@@ -151,29 +149,4 @@ JOIN venues AS v
 WHERE m.status = 'Completed'
 GROUP BY v.venue_id, v.stadium_name
 ORDER BY avg_fouls DESC
-LIMIT 10;
-
--- 9) Venues with the most one-sided possession matches
-SELECT
-    v.stadium_name,
-    m.match_id,
-    m.date,
-    ht.fifa_code AS home_team,
-    home_stats.possession_pct AS home_possession_pct,
-    at.fifa_code AS away_team,
-    away_stats.possession_pct AS away_possession_pct,
-    ABS(home_stats.possession_pct - away_stats.possession_pct) AS possession_gap
-FROM matches AS m
-JOIN venues AS v
-    ON m.venue_id = v.venue_id
-JOIN teams AS ht
-    ON m.home_team_id = ht.team_id
-JOIN teams AS at
-    ON m.away_team_id = at.team_id
-JOIN match_team_stats AS home_stats
-    ON home_stats.match_id = m.match_id AND home_stats.team_id = m.home_team_id
-JOIN match_team_stats AS away_stats
-    ON away_stats.match_id = m.match_id AND away_stats.team_id = m.away_team_id
-WHERE m.status = 'Completed'
-ORDER BY possession_gap DESC
 LIMIT 10;

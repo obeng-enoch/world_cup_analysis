@@ -1,0 +1,14 @@
+# Core data pipeline
+pandas>=2.0
+
+# Dashboard
+streamlit>=1.30
+
+# --- Uncomment if used in your project ---
+# numpy>=1.26            # usually pulled in by pandas, but pin explicitly if imported directly
+# plotly>=5.18            # if your Streamlit charts use plotly instead of st.line_chart/st.bar_chart
+# matplotlib>=3.8         # if any charts are matplotlib-based
+# python-dotenv>=1.0      # if you load config/secrets from a .env file
+
+# --- Add once you build the tests/ suite (Phase after the Python analytics layer) ---
+# pytest>=8.0

@@ -172,8 +172,6 @@ ORDER BY m.date;
 
 -- 5) Biggest upsets (lower FIFA ranking beats higher-ranked opponent)
 -- ==========================================================
--- 5) Biggest Upsets
--- ==========================================================
 
 SELECT
 

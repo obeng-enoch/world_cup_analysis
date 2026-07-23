@@ -231,3 +231,17 @@ def clean_match_lineups() -> pd.DataFrame:
     match_lineups = load_csv("match_lineups")
 
     return match_lineups
+
+def clean_tournament_awards() -> pd.DataFrame:
+    """
+    Load and clean the tournament_awards dataset.
+    
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned tournament_awards DataFrame.
+    """
+
+    tournament_awards = load_csv("tournament_awards")
+
+    return tournament_awards

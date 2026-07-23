@@ -13,6 +13,7 @@ from src.clean_data import (
     clean_match_team_stats,
     clean_match_events,
     clean_match_lineups,
+    clean_tournament_awards,
 )
 
 from src.validators import (
@@ -26,6 +27,7 @@ from src.validators import (
     validate_match_team_stats,
     validate_match_events,
     validate_match_lineups,
+    validate_tournament_awards,
 )
 
 def get_database_connection() -> sqlite3.Connection:
@@ -322,6 +324,34 @@ def load_match_lineups(connection: sqlite3.Connection) -> None:
 
     print("✓ match_lineups loaded successfully.")
 
+def load_tournament_awards(connection: sqlite3.Connection) -> None:
+    """
+    Load the validated tournament_awards DataFrame into SQLite.
+    
+    Parameters
+    ----------
+    connection : sqlite3.Connection
+        Active SQLite database connection.
+    """
+
+    print("Loading tournament awards")
+
+    #Extract and transform
+    tournament_awards = clean_tournament_awards()
+
+    #validate
+    validate_tournament_awards(tournament_awards)
+
+    #Load
+    tournament_awards.to_sql(
+        name="tournament_awards",
+        con=connection,
+        if_exists="replace",
+        index=False,
+    )
+
+    print("✓ tournament_awards loaded successfully.")
+
 def build_database() -> None:
     """
     Build the SQLite database from the cleaned and validated datasets.
@@ -340,6 +370,7 @@ def build_database() -> None:
         load_match_team_stats(connection)
         load_match_events(connection)
         load_match_lineups(connection)
+        load_tournament_awards(connection)
 
     finally:
         connection.close()

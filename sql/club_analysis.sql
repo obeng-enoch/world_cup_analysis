@@ -47,7 +47,7 @@ LIMIT 10;
 -- SECTION B — CLUB SQUAD VALUE
 -- ==========================================================
 
--- 4) Most valuable clubs by combined market value of players sent
+-- 3) Most valuable clubs by combined market value of players sent
 SELECT
     sp.club_team,
     COUNT(*) AS players_sent,
@@ -58,7 +58,7 @@ GROUP BY sp.club_team
 ORDER BY total_market_value_eur DESC
 LIMIT 10;
 
--- 5) Most valuable individual player per club (top asset)
+-- ) Most valuable individual player per club (top asset)
 SELECT
     sp.club_team,
     sp.player_name,
@@ -142,76 +142,6 @@ LIMIT 10;
 -- ==========================================================
 -- SECTION D — CLUB TOURNAMENT HONOURS
 -- ==========================================================
--- Traces each team's tournament finish (Champion/Runner-up/Third
--- Place/etc.) back to the players' club sides via
--- squads_and_players.club_team. Mirrors the finish logic in
--- team_analysis.sql — kept in sync manually since SQLite has no
--- shared views across files in this project structure.
-
-WITH team_matches AS (
-    SELECT
-        m.match_id,
-        m.stage_id,
-        m.home_team_id AS team_id,
-        m.home_score AS goals_for,
-        m.away_score AS goals_against
-    FROM matches AS m
-    WHERE m.status = 'Completed'
-
-    UNION ALL
-
-    SELECT
-        m.match_id,
-        m.stage_id,
-        m.away_team_id AS team_id,
-        m.away_score AS goals_for,
-        m.home_score AS goals_against
-    FROM matches AS m
-    WHERE m.status = 'Completed'
-),
-
-furthest_stage AS (
-    SELECT
-        team_id,
-        MAX(stage_id) AS max_stage_id
-    FROM team_matches
-    GROUP BY team_id
-),
-
-final_match AS (
-    SELECT
-        tm.team_id,
-        tm.stage_id,
-        CASE
-            WHEN tm.goals_for > tm.goals_against THEN 'Win'
-            WHEN tm.goals_for < tm.goals_against THEN 'Loss'
-            ELSE 'Draw'
-        END AS result,
-        ROW_NUMBER() OVER (PARTITION BY tm.team_id ORDER BY tm.match_id) AS rn
-    FROM team_matches AS tm
-    JOIN furthest_stage AS fs
-        ON tm.team_id = fs.team_id
-        AND tm.stage_id = fs.max_stage_id
-),
-
-team_finish AS (
-    SELECT
-        fm.team_id,
-        CASE
-            WHEN fm.stage_id = 7 AND fm.result = 'Win'             THEN 'Champion'
-            WHEN fm.stage_id = 7 AND fm.result IN ('Loss','Draw')  THEN 'Runner-up'
-            WHEN fm.stage_id = 6 AND fm.result = 'Win'             THEN 'Third Place'
-            WHEN fm.stage_id = 6 AND fm.result IN ('Loss','Draw')  THEN 'Fourth Place'
-            WHEN fm.stage_id = 5                                   THEN 'Semi-finalist'
-            WHEN fm.stage_id = 4                                   THEN 'Quarter-finalist'
-            WHEN fm.stage_id = 3                                   THEN 'Round of 16'
-            WHEN fm.stage_id = 2                                   THEN 'Round of 32'
-            WHEN fm.stage_id = 1                                   THEN 'Eliminated - Group Stage'
-            ELSE 'Unknown'
-        END AS tournament_finish
-    FROM final_match AS fm
-    WHERE fm.rn = 1
-)
 
 -- 10) Clubs whose players won the World Cup (Champion squad),
 -- highest to lowest

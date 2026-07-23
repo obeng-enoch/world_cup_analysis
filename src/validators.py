@@ -642,6 +642,7 @@ def validate_match_events(df: pd.DataFrame) -> bool:
         raise ValueError(
             "Duplicate event_id values found."
         )
+    
     # Check 5: minute datatype should be string
     if not pd.api.types.is_string_dtype(df["minute"]):
         raise ValueError(
@@ -738,5 +739,65 @@ def validate_match_lineups(df: pd.DataFrame) -> bool:
         raise ValueError(
             "minutes_played cannot exceed 120 minutes."
         )
+    
+    return True
+
+def validate_tournament_awards(df: pd.DataFrame) -> bool:
+    """
+    Validate the cleaned tournament awards statistics DataFrame.
+    
+    Parameters
+    ----------
+    df :pd.DataFrame
+        Cleaned tournament_awards Statistics.
+        
+    Returns
+    -------
+    bool
+        True if all validation checks pass.
+
+    Raises
+    ------
+    ValueError
+        If the DataFrame is empty, contains duplicate award_id,
+        or has missing values in required columns.
+    KeyError
+        If required columns are missing.
+    """
+
+    required_columns = REQUIRED_COLUMNS["tournament_awards"]
+    
+    # Check 1: DataFrame is not empty
+    if df.empty:
+        raise ValueError("Tournament awards statistics dataset is empty.")
+    
+    # Check 2: Required columns exist
+    missing_columns = [
+        column
+        for column in required_columns
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        raise KeyError(
+            f"Missing required columns: {missing_columns}"
+        )
+    
+    # Check 3: Required fields contain no missing values
+    missing_values = df[required_columns].isnull().any()
+
+    columns_with_missing_values = missing_values[
+        missing_values
+    ].index.tolist()
+
+    if columns_with_missing_values:
+        raise ValueError(
+            f"Missing values found in required columns: "
+            f"{columns_with_missing_values}"
+        )
+    
+    # Check 4: award_id is unique
+    if df["award_id"].duplicated().any():
+        raise ValueError("Duplicate award_id values found.")
     
     return True

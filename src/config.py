@@ -26,6 +26,7 @@ TABLES = [
     "match_team_stats",
     "match_events",
     "match_lineups.csv",
+    "tournament_awards.csv"
 ]
 
 # Registering every table here
@@ -40,6 +41,7 @@ CSV_FILES = {
     "match_team_stats": RAW_DATA_DIR / "match_team_stats.csv",
     "match_events": RAW_DATA_DIR / "match_events.csv",
     "match_lineups": RAW_DATA_DIR / "match_lineups.csv",
+    "tournament_awards": RAW_DATA_DIR / "tournament_awards.csv",
 }
 
 # Date columns that should be converted to datetime during the cleaning step.
@@ -147,5 +149,12 @@ REQUIRED_COLUMNS = {
         "is_starting_xi",
         "tactical_position",
         "minutes_played",
-    ]
+    ],
+
+    "tournament_awards": [
+        "award_id",
+        "award_name",
+        "recipient_type",
+        "team",
+    ],
 }

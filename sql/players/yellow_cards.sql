@@ -1,0 +1,13 @@
+-- Most yellow cards
+SELECT
+    ps.player_name,
+    t.fifa_code AS team,
+    ps.yellow_cards,
+    ps.red_cards,
+    ps.matches_played,
+    ps.minutes_played
+FROM player_stats AS ps
+JOIN teams AS t ON ps.team_id = t.team_id
+WHERE ps.yellow_cards > 0
+ORDER BY ps.yellow_cards DESC, ps.red_cards DESC, ps.minutes_played ASC
+LIMIT 10;

@@ -21,7 +21,7 @@ FROM squads_and_players;
 SELECT COUNT(*) AS total_matches
 FROM matches;
 
--- KPI 6: Total Goals
+-- KPI 5: Total Goals
 SELECT
     SUM(home_score + away_score) AS total_goals
 FROM matches

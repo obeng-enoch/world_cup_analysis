@@ -35,3 +35,30 @@ def get_dataframe(query_path: str) -> pd.DataFrame:
         return pd.read_sql_query(query, conn)
     finally:
         conn.close()
+
+def get_scalar(query_path):
+    """
+    Execute a SQL query that returns a single value.
+
+    Parameters
+    ----------
+    query_path : str
+        Relative path to the SQL file.
+
+    Returns
+    -------
+    Any
+        The scalar value returned by the query.
+    """
+    df = get_dataframe(query_path)
+
+    if df.empty:
+        raise ValueError(f"Query '{query_path}' returned no rows.")
+
+    if df.shape != (1, 1):
+        raise ValueError(
+            f"Expected a single value from '{query_path}', "
+            f"but got {df.shape[0]} rows and {df.shape[1]} columns."
+        )
+
+    return df.iat[0, 0]

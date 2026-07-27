@@ -6,8 +6,11 @@ from src.analytics.tournament import (
     get_world_cup_winner,
     get_runner_up,
     get_third_place,
-    get_world_cup_winner,
+    get_goals_per_stage,
 )
+
+from src.analytics.awards import get_awards
+from src.analytics.teams import get_tournament_finish
 
 
 def get_homepage_metrics():
@@ -31,3 +34,12 @@ def get_tournament_summary():
         "runner_up": get_runner_up(),
         "third_place": get_third_place(),
     }
+
+def get_tournament_awards():
+    return get_awards()
+
+def get_tournament_finish_table():
+    return get_tournament_finish()
+
+def get_goals_per_stage_chart():
+    return get_goals_per_stage()

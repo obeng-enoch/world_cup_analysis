@@ -1,0 +1,25 @@
+"""
+Reusable spacing scale.
+
+Never use magic numbers.
+"""
+
+XXS = 4
+XS = 8
+SM = 12
+MD = 16
+LG = 24
+XL = 32
+XXL = 48
+
+CARD_PADDING = MD
+CARD_GAP = LG
+
+SECTION_MARGIN = XL
+PAGE_TOP_PADDING = XXL
+
+ROW_GAP = MD
+COLUMN_GAP = LG
+
+LABEL_VALUE_GAP = XS
+ICON_TEXT_GAP = XXS

@@ -36,8 +36,6 @@ def render_icon(
     """
     svg = load_icon(icon)
 
-    svg = load_icon(icon)
-
     svg = svg.replace(
         'width="24"',
         f'width="{size}"',

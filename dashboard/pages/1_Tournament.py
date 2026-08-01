@@ -1,16 +1,17 @@
-from components.metrics import metric_card
-from components.podium import podium_card
-from components.award import award_card
-from components.charts import plot_bar_chart
+from dashboard.components.metrics import metric_card
+from dashboard.components.podium import podium_card
+from dashboard.components.award import award_card
+from dashboard.theme.icons import GOAL, MATCH, PLAYER, WORLD
+from dashboard.components.charts import plot_bar_chart
 
-from utils.dashboard_data import (
+from dashboard.utils.dashboard_data import (
     get_tournament_summary,
     get_tournament_awards,
     get_tournament_finish_table,
 )
 
-from utils.dashboard_data import get_goals_per_stage_chart
-from utils.ui import load_css
+from dashboard.utils.dashboard_data import get_goals_per_stage_chart
+from dashboard.theme.css import load_css
 
 import streamlit as st
 
@@ -42,16 +43,16 @@ st.subheader("Tournament Summary")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    metric_card("Total Teams", summary["teams"])
+    metric_card("Total Teams", summary["teams"], icon=WORLD)
 
 with col2:
-    metric_card("Total Players", f"{summary['players']:,}")
+    metric_card("Total Players", f"{summary['players']:,}", icon=PLAYER)
 
 with col3:
-    metric_card("Total Matches", summary["matches"])
+    metric_card("Total Matches", summary["matches"], icon=MATCH)
 
 with col4:
-    metric_card("Total Goals", summary["goals"])
+    metric_card("Total Goals", summary["goals"], icon=GOAL)
 
 st.divider()
 
@@ -60,13 +61,13 @@ st.subheader("Final Standings")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    podium_card(" Champion", summary["winner"])
+    podium_card(" Champion", summary["winner"], medal="gold")
 
 with col2:
-    podium_card(" Runner-up", summary["runner_up"])
+    podium_card(" Runner-up", summary["runner_up"], medal="silver")
 
 with col3:
-    podium_card(" Third Place", summary["third_place"])
+    podium_card(" Third Place", summary["third_place"], medal="bronze")
 
 st.subheader("Goals by Tournament Stage")
 

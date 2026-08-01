@@ -2,13 +2,12 @@ from pathlib import Path
 
 import streamlit as st
 
-from components.metrics import metric_card
-from utils.dashboard_data import get_homepage_metrics
-from utils.ui import load_css
+from dashboard.components.metrics import metric_card
+from dashboard.theme.icons import GOAL, MATCH, PLAYER, WORLD
+from dashboard.utils.dashboard_data import get_homepage_metrics
+from dashboard.theme.css import load_css
 
-# --------------------------------------------------
 # Page Configuration
-# --------------------------------------------------
 
 from config import (
     APP_TITLE,
@@ -24,16 +23,11 @@ st.set_page_config(
     initial_sidebar_state=SIDEBAR_STATE,
 )
 
-
-# --------------------------------------------------
 # Load Global CSS
-# --------------------------------------------------
 load_css()
 
 
-# --------------------------------------------------
 # Home Page
-# --------------------------------------------------
 st.header("FIFA World Cup 2026 Analytics Dashboard")
 
 st.markdown(
@@ -47,34 +41,29 @@ Python, SQLite, SQL, Pandas, Streamlit, and Plotly.
 
 st.divider()
 
-# --------------------------------------------------
 # Dashboard Data
-# --------------------------------------------------
 metrics = get_homepage_metrics()
 
-# --------------------------------------------------
 # Tournament Snapshot
-# --------------------------------------------------
 st.subheader("Tournament Snapshot")
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    metric_card("Total Teams", metrics["teams"])
+    metric_card("Total Teams", metrics["teams"], icon=WORLD)
 
 with col2:
-    metric_card("Total Players", f"{metrics['players']:,}")
+    metric_card("Total Players", f"{metrics['players']:,}", icon=PLAYER)
 
 with col3:
-    metric_card("Total Matches", metrics["matches"])
+    metric_card("Total Matches", metrics["matches"], icon=MATCH)
 
 with col4:
-    metric_card("Total Goals", metrics["goals"])
+    metric_card("Total Goals", metrics["goals"], icon=GOAL)
 st.divider()
 
-# --------------------------------------------------
+
 # Explore
-# --------------------------------------------------
 st.subheader("Explore")
 
 st.markdown(

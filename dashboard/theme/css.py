@@ -154,6 +154,115 @@ body,
 
 }}
 
+/* Podium Card */
+
+.podium-card {{
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    border-top: 4px solid var(--medal-color, {BORDER});
+
+}}
+
+
+/* Podium Position */
+
+.podium-position {{
+
+    color: {TEXT_SECONDARY};
+
+    font-size: {CARD_TITLE["size"]}px;
+
+    font-weight: {CARD_TITLE["weight"]};
+
+}}
+
+/* Podium Team */
+
+.podium-team {{
+
+    color: {TEXT_PRIMARY};
+
+    font-size: {METRIC_VALUE["size"]}px;
+
+    font-weight: {METRIC_VALUE["weight"]};
+    
+    margin-top: {ICON_TEXT_GAP}px;
+
+}}
+
+/* Award Card */
+
+.award-card {{
+
+    display: flex;
+
+    flex-direction: column;
+
+}}
+
+
+/* Award Header */
+
+.award-header {{
+
+    display: flex;
+
+    align-items: center;
+
+    gap: {ICON_TEXT_GAP}px;
+
+}}
+
+
+/* Award Name */
+
+.award-name {{
+
+    color: {TEXT_SECONDARY};
+
+    font-size: {CARD_TITLE["size"]}px;
+
+    font-weight: {CARD_TITLE["weight"]};
+
+}}
+
+
+/* Award Winner */
+
+.award-winner {{
+
+    color: {TEXT_PRIMARY};
+
+    font-size: {METRIC_VALUE["size"]}px;
+
+    font-weight: {METRIC_VALUE["weight"]};
+
+    margin-top: {ICON_TEXT_GAP}px;
+
+}}
+
+
+/* Award Team */
+
+.award-team {{
+
+    color: {TEXT_SECONDARY};
+
+    font-size: {METRIC_DELTA_SIZE}px;
+
+    margin-top: 2px;
+
+}}
+
 </style>
 """
 
@@ -162,7 +271,4 @@ def load_css() -> None:
     """
     Inject the global dashboard stylesheet.
     """
-    st.markdown(
-        CSS,
-        unsafe_allow_html=True,
-    )
+    st.html(CSS)

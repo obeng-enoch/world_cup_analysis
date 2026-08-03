@@ -8,34 +8,33 @@ constants instead of hard-coding colour values.
 """
 
 # Primary Brand Colours
-PRIMARY = "#0057B8"        # FIFA-inspired blue
-SECONDARY = "#0B1F3A"      # Deep navy
-ACCENT = "#D4AF37"         # Gold
+PRIMARY = "#FF7A00"        # main orange
+SECONDARY = "#0B0D10"      # page background
+ACCENT = "#FFB000"         # gold highlight
 
 # Status Colours
-SUCCESS = "#2E8B57"
-WARNING = "#E67E22"
-ERROR = "#C0392B"
-INFO = "#3498DB"
+SUCCESS = "#22C55E"
+WARNING = "#F59E0B"
+ERROR = "#F43F5E"
+INFO = "#34BDF8"
 
 # Neutral Colours
-WHITE = "#FFFFFF"
+WHITE = "#F4F7FB"
 BLACK = "#000000"
 
-BACKGROUND = "#F5F7FA"
-SURFACE = "#FFFFFF"
+BACKGROUND = "#0B0D10"
+SURFACE = "#14171C"
 
-TEXT_PRIMARY = "#1F2937"
-TEXT_SECONDARY = "#6B7280"
+TEXT_PRIMARY = "#F4F7FB"
+TEXT_SECONDARY = "#9CA3AF"
 
-BORDER = "#D9E2EC"
-
-GRID = "#E5E7EB"
+BORDER = "#252A31"
+GRID = "#252A31"
 CHART_LINE = PRIMARY
 
-HOVER = "#EEF4FF"
-HOVER_DARK = "#123A6B"
-ACTIVE = "#00458F"
+HOVER = "#1B2027"
+HOVER_DARK = "#242B35"
+ACTIVE = "#E86700"
 
 CARD_SHADOW = "rgba(0,0,0,0.08)"
 

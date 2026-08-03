@@ -4,15 +4,25 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 import pandas as pd
+from dashboard.theme.constants import CHART_HEIGHT_COMPACT
 
-DEFAULT_HEIGHT = 450
+from dashboard.theme.colors import (
+    ACCENT,
+    GRID,
+    PRIMARY,
+    SECONDARY,
+    TEXT_PRIMARY,
+    TEXT_SECONDARY,
+)
+
+DEFAULT_HEIGHT = CHART_HEIGHT_COMPACT
 DEFAULT_TEMPLATE = "plotly_white"
 
 def _style_chart(
     fig: go.Figure,
     *,
     title: Optional[str] = None,
-    height: int = 420,
+    height: int = DEFAULT_HEIGHT,
     show_legend: bool = False,
 ) -> go.Figure:
     """Apply a consistent style to all dashboard charts."""
@@ -152,3 +162,99 @@ def plot_pie_chart(
         height=height,
         show_legend=True,
     )
+
+def plot_stage_goals_chart(
+    data: pd.DataFrame,
+    value_column: str,
+    value_label: str,
+    height: int = 210,
+) -> go.Figure:
+    """Interactive goals-by-stage chart for the tournament overview."""
+
+    bar_colors = [
+        ACCENT if stage == "Final" else PRIMARY
+        for stage in data["stage"]
+    ]
+
+    fig = go.Figure(
+        go.Bar(
+            x=data["stage"],
+            y=data[value_column],
+            marker=dict(
+                color=bar_colors,
+                line=dict(width=0),
+            ),
+            text=data[value_column],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=data[["matches_played", "avg_goals_per_match"]],
+            hovertemplate=(
+                "<b>%{x}</b><br>"
+                f"{value_label}: <b>%{{y}}</b><br>"
+                "Matches played: %{customdata[0]}<br>"
+                "Goals per match: %{customdata[1]}"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    fig.update_layout(
+        template="none",
+        height=height,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=58, r=12, t=18, b=58),
+        font=dict(
+            family="'Inter', 'Segoe UI', sans-serif",
+            color=TEXT_PRIMARY,
+            size=12,
+        ),
+        hoverlabel=dict(
+            bgcolor="#1B2027",
+            bordercolor=PRIMARY,
+            font_color=TEXT_PRIMARY,
+        ),
+    )
+
+    stage_labels = {
+        "Group Stage": "Group<br>stage",
+        "Round of 32": "Round of<br>32",
+        "Round of 16": "Round of<br>16",
+        "Quarter-finals": "Quarter-<br>finals",
+        "Semi-finals": "Semi-<br>finals",
+        "Third-place match": "Third-place<br>match",
+        "Final": "Final",
+    }
+
+    fig.update_xaxes(
+        showgrid=False,
+        showline=False,
+        tickmode="array",
+        tickvals=data["stage"].tolist(),
+        ticktext=[
+            stage_labels.get(stage, stage)
+            for stage in data["stage"]
+        ],
+        tickangle=0,
+        automargin=True,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+
+    fig.update_yaxes(
+        title=value_label,
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
+        range=[0, data[value_column].max() * 1.20],
+    )
+
+    return fig

@@ -1,0 +1,22 @@
+[theme]
+base = "dark"
+
+primaryColor = "#FF7A00"
+backgroundColor = "#0B0D10"
+secondaryBackgroundColor = "#14171C"
+textColor = "#F4F7FB"
+borderColor = "#252A31"
+
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+
+chartCategoricalColors = [
+    "#FF7A00",
+    "#FFB000",
+    "#22C55E",
+    "#38BDF8",
+    "#A78BFA",
+    "#F43F5E"
+]
+
+dataframeBorderColor = "#252A31"
+dataframeHeaderBackgroundColor = "#1B2027"

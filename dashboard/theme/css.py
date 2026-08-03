@@ -37,6 +37,7 @@ from dashboard.theme.constants import (
 from dashboard.theme.spacing import (
     CARD_PADDING,
     ICON_TEXT_GAP,
+    SECTION_MARGIN,
 )
 
 from dashboard.theme.typography import (
@@ -44,6 +45,8 @@ from dashboard.theme.typography import (
     CARD_TITLE,
     METRIC_VALUE,
     METRIC_DELTA_SIZE,
+    SECTION_TITLE,
+    BODY,
 )
 
 CSS = f"""
@@ -63,45 +66,38 @@ body,
 /* Dashboard Card */
 
 .dashboard-card {{
-
-    background: {SURFACE};
-
-    border: {BORDER_WIDTH}px solid {BORDER};
-
-    border-radius: {CARD_RADIUS}px;
-
-    box-shadow: {CARD_SHADOW};
-
-    padding: {CARD_PADDING}px;
-
-    transition:
-        transform {ANIMATION_DURATION}ms ease,
-        box-shadow {ANIMATION_DURATION}ms ease;
-
+    background: linear-gradient(145deg, #181C22 0%, #12151A 100%);
+    border: 1px solid #252A31;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+    padding: 8px;
+    transition: transform 150ms ease, border-color 150ms ease,
+        box-shadow 150ms ease;
 }}
 
-
 .dashboard-card:hover {{
-
     transform: translateY(-2px);
-
-    box-shadow: {CARD_SHADOW_HOVER};
-
+    border-color: #FF7A00;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }}
 
 
 /* Metric Card */
 
 .metric-card {{
+    position: relative;
+    overflow: hidden;
+}}
 
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: space-between;
-
-    height: {KPI_HEIGHT}px;
-
+.metric-card::after {{
+    content: "";
+    position: absolute;
+    right: -24px;
+    bottom: -42px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: rgba(255, 122, 0, 0.08);
 }}
 
 
@@ -260,6 +256,45 @@ body,
     font-size: {METRIC_DELTA_SIZE}px;
 
     margin-top: 2px;
+
+}}
+
+
+/* Section Heading (used by dashboard/components/headings.py) */
+
+.section-heading-title {{
+
+    color: {TEXT_PRIMARY};
+
+    font-size: {SECTION_TITLE["size"]}px;
+
+    font-weight: {SECTION_TITLE["weight"]};
+
+    line-height: {SECTION_TITLE["line_height"]};
+
+}}
+
+
+.section-heading-description {{
+
+    color: {TEXT_SECONDARY};
+
+    font-size: {BODY["size"]}px;
+
+    font-weight: {BODY["weight"]};
+
+    line-height: {BODY["line_height"]};
+
+    margin-top: 2px;
+
+}}
+
+
+/* Layout spacing (used by dashboard/layout.py) */
+
+.section-gap {{
+
+    margin-top: {SECTION_MARGIN}px;
 
 }}
 

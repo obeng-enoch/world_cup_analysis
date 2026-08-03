@@ -2,27 +2,27 @@
 Global UI constants.
 """
 
-CARD_RADIUS = 12
+CARD_RADIUS = 10
 BUTTON_RADIUS = 8
 TABLE_RADIUS = 8
 
 BORDER_WIDTH = 1
-CARD_SHADOW = "0 1px 3px rgba(15, 23, 42, 0.08)"
-CARD_SHADOW_HOVER = "0 4px 12px rgba(15, 23, 42, 0.12)"
+CARD_SHADOW = "0 8px 24px rgba(0, 0, 0, 0.24)"
+CARD_SHADOW_HOVER = "0 12px 30px rgba(0, 0, 0, 0.35)"
 
-KPI_HEIGHT = 110
+KPI_HEIGHT = 72
 CHART_HEIGHT = 450
-CHART_HEIGHT_COMPACT = 260
-PLOTLY_TEMPLATE = "plotly_white"
+CHART_HEIGHT_COMPACT = 210
+PLOTLY_TEMPLATE = "plotly_dark"
 
 CHART_MARGIN = dict(
-    l=20,
-    r=20,
-    t=60,
-    b=20
+    l=16,
+    r=16,
+    t=16,
+    b=16
 )
 
-TABLE_HEIGHT = 420
+TABLE_HEIGHT = 180
 
 SIDEBAR_WIDTH = 260
 CONTENT_MAX_WIDTH = 1200

@@ -1,153 +1,156 @@
-# FIFA World Cup 2026 Analysis
+# FIFA World Cup 2026 Analytics Dashboard
 
-## Project Overview
+An end-to-end data project analyzing the completed FIFA World Cup 2026 — built as a portfolio-grade analytics product rather than a static report. The project follows a strict layered architecture: a Python ETL pipeline loads raw tournament data into SQLite, a SQL analytics layer owns all football-analytics logic, a Python analytics API exposes that data cleanly, and a Streamlit dashboard with a custom design system presents it.
 
-This project analyzes FIFA World Cup 2026 player and club performance using a relational SQLite dataset. The goal is to identify top-performing players, national teams, and domestic clubs based on goals, assists, and total goal contributions.
+## Project Philosophy
 
-The project combines SQL for querying a normalized database, Python for analysis, and Streamlit for an interactive dashboard.
+**Analytics before visualization.** Every metric on the dashboard has to answer a real football question before it earns a place in the UI.
 
-## Dataset
+The project is organized in layers, and no layer is allowed to duplicate another's responsibility:
 
-The dataset contains information about:
-
-- Teams
-- Players
-- Matches
-- Match events
-- Player statistics
-- Venues
-- Referees
-- Team match statistics
-
-Source: FIFA World Cup 2026 dataset from Kaggle, GitHub, and Hugging Face.
+```
+Raw FIFA Dataset
+      ↓
+Python ETL Pipeline            (import, clean, validate, load — no dashboard logic)
+      ↓
+SQLite Database                (database/world_cup_2026.db — single source of truth)
+      ↓
+SQL Analytics Layer            (owns all football analytics logic; one file = one query)
+      ↓
+Python Analytics API           (loads + executes SQL, returns scalars/DataFrames only)
+      ↓
+Dashboard Utilities            (combines analytics calls into page-ready datasets)
+      ↓
+Dashboard Theme System         (single source of truth for colors, type, spacing, icons)
+      ↓
+Reusable Components            (presentation only — cards, charts, tables)
+      ↓
+Dashboard Pages                (layout only — no SQL, no business logic)
+```
 
 ## Tools Used
 
-- Python
-- Pandas
-- SQLite
-- Matplotlib
-- Seaborn
-- Plotly
-- Streamlit
+Python · SQLite · SQL · Pandas · Streamlit · Plotly
+
+## Dataset
+
+Sourced from a FIFA World Cup 2026 dataset (Kaggle / GitHub / Hugging Face), covering:
+
+- Teams, players, squads and clubs
+- Matches and match events
+- Player statistics and match-team statistics
+- Venues and referees
+- Tournament awards (Golden/Silver/Bronze Ball & Boot, Golden Glove, Best Young Player, Fair Play Award)
+
+Since the tournament has concluded, this is a **completed-tournament analysis dashboard**, not a live tracker.
 
 ## Project Structure
 
-```text
+```
 world_cup_analysis/
-├── data/
-│   └── raw/
-│       └── worldcup/
-│           ├── fifa_world_cup_2026.db
-│           ├── player_stats.csv
-│           ├── squads_and_players.csv
-│           ├── teams.csv
-│           └── other raw dataset files
+├── database/
+│   └── world_cup_2026.db          # canonical SQLite database
+├── sql/                            # SQL analytics layer — one file per query
+│   ├── tournament_overview/
+│   ├── players/
+│   ├── teams/
+│   ├── awards/
+│   ├── club/
+│   ├── match_analysis/
+│   ├── events/
+│   ├── referee/
+│   └── tactical/
+├── src/
+│   └── analytics/                  # Python analytics API
+│       ├── database.py
+│       ├── query_loader.py
+│       ├── tournament.py
+│       ├── players.py
+│       ├── teams.py
+│       ├── matches.py
+│       ├── clubs.py
+│       ├── venues.py
+│       ├── referees.py
+│       ├── events.py
+│       ├── awards.py
+│       └── tactical.py
 ├── dashboard/
-│   └── app.py
-├── notebooks/
-│   └── club_rival_analysis.ipynb
+│   ├── app.py                      # home page
+│   ├── config.py
+│   ├── pages/
+│   │   └── 1_Tournament.py         # + remaining pages in progress
+│   ├── components/                 # reusable UI (metric, podium, award cards, charts)
+│   ├── theme/                      # design system: colors, typography, spacing, icons, css
+│   ├── utils/                      # page-ready data preparation
+│   └── assets/
+│       └── icons/                  # local Lucide SVG icon set
+├── notebooks/                      # early exploratory analysis (see note below)
 └── README.md
 ```
 
-## Key Questions
+## Key Questions This Project Answers
 
-This project focuses on answering the following questions:
-
-- Which players have the most goals and assists?
-- Which domestic clubs have contributed the most goals through their players?
-- Which clubs have the highest total goal contributions?
-- Which national teams are producing the strongest attacking output?
-- How can tournament data be presented clearly in an interactive dashboard?
-
-## Analysis Summary
-
-The notebook explores player and club performance by connecting to the SQLite database and querying the relevant tables. The main analysis joins `player_stats` with `squads_and_players` to connect each player's World Cup performance with their domestic club.
-
-The key metric used is total goal contributions:
-
-```text
-total goal contributions = goals + assists
-```
-
-This gives a broader view of attacking impact than goals alone.
+- Which players and teams produced the strongest attacking output?
+- Which domestic clubs contributed the most through their players at the tournament?
+- How did each team's tournament run end (champion, runner-up, stage eliminated)?
+- Who won each individual award, and how did the tournament's goals and outcomes break down by stage?
+- How can completed tournament data be presented clearly as an interactive analytics product?
 
 ## Current Findings
 
-- Real Madrid C. F. leads the club ranking by total goal contributions.
-- Paris Saint-Germain and Bayern Munich are also among the strongest contributors.
-- Some major clubs, such as Barcelona and Chelsea, are not currently among the top clubs by total goal contributions in this dataset.
-- Goal contributions provide a better view of attacking influence than goals alone because assists are also included.
+- **Champion: Spain** · **Runner-up: Argentina** · **Third place: England**
+- Tournament totals: 48 teams, 1,248 players, 104 matches, 308 goals
+- Full award winners (Golden/Silver/Bronze Ball, Golden/Silver/Bronze Boot, Golden Glove, Best Young Player, Fair Play) are tracked in a dedicated awards table and surfaced on the Tournament page
 
 ## Dashboard
 
-The Streamlit dashboard provides an interactive way to explore the data. It currently includes:
+The Streamlit dashboard is built as a proper design system, not a one-off script:
 
-- Key tournament metrics
-- Top goal scorers
-- Top clubs by goals contributed
-- Team-level goal and assist comparison
-- Sidebar filtering by team
+- A **theme package** (`dashboard/theme/`) centralizes every color, font, spacing value, and icon — no component hardcodes styling
+- A **local Lucide SVG icon set** replaces emoji icons for a more polished look
+- Reusable **card components** (KPI metric cards, podium/standings cards, award cards) and a **Plotly chart library** with a consistent visual style across every chart
+- Currently live: home page with tournament-wide KPIs, and a Tournament Overview page (summary KPIs, final standings, goals-by-stage chart, full standings table, tournament awards)
+- In progress: Players, Teams, Matches, Clubs, Venues, Referees, Events, and Awards pages, each following the same architecture
 
-Run the dashboard with:
-
+Run it with:
 ```bash
-streamlit run dashboard/app.py
+PYTHONPATH=. streamlit run dashboard/app.py
 ```
 
 ## How To Run The Project
 
-1. Clone or download the project.
-2. Make sure the dataset is available in `data/raw/worldcup/`.
-3. Install the required Python packages.
-4. Open the notebook or run the Streamlit dashboard.
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Confirm `database/world_cup_2026.db` is present (or run the ETL pipeline to build it — see below).
+4. Launch the dashboard:
+   ```bash
+   PYTHONPATH=. streamlit run dashboard/app.py
+   ```
 
-Install dependencies:
-
+To rebuild the database from raw data:
 ```bash
-pip install pandas numpy matplotlib seaborn plotly streamlit
+git pull
+python -m src.update_database
 ```
 
-Run the notebook:
+## A Note on the `notebooks/` Folder
 
-```bash
-jupyter notebook notebooks/club_rival_analysis.ipynb
-```
+This project began as an exploratory notebook-based analysis before being rebuilt with a proper ETL → SQL → Analytics API → Dashboard architecture. The early notebook(s) are kept for historical reference but no longer reflect how the project actually works — all analytics logic now lives in the `sql/` and `src/analytics/` layers described above.
 
-Run the dashboard:
+## Roadmap
 
-```bash
-streamlit run dashboard/app.py
-```
-
-## Important Data Note
-
-Some numeric columns in the SQLite database are stored as text. For accurate calculations, numeric fields such as `goals`, `assists`, and `minutes_played` should be converted to numbers in Python or cast in SQL.
-
-Example SQL cast:
-
-```sql
-SUM(CAST(goals AS INTEGER)) AS total_goals
-```
-
-Example pandas conversion:
-
-```python
-player_stats["goals"] = pd.to_numeric(player_stats["goals"], errors="coerce")
-```
-
-## Future Improvements
-
-Planned improvements include:
-
-- Fixing numeric type conversion throughout the notebook and dashboard
-- Adding more player-level comparison charts
-- Adding goals-per-90 and assists-per-90 metrics
-- Improving dashboard filters for club, team, and position
-- Adding a `requirements.txt` file
-- Adding screenshots of the dashboard
-- Expanding the conclusion section with stronger football insights
+- [ ] Finish remaining dashboard pages (Players, Teams, Matches, Clubs, Venues, Referees, Events, Awards)
+- [ ] Add remaining Tournament page visualizations (Match Outcomes, Goals by Team)
+- [ ] Plotly chart library v2 (richer theming, responsive sizing, consistent legends)
+- [ ] Layout helper module for reusable page grids
+- [ ] Mobile responsiveness pass
+- [ ] Automated tests
+- [ ] Final polish: loading/empty states, tooltips, accessibility, number formatting
+- [ ] Portfolio screenshots and demo video
 
 ## Conclusion
 
-This project demonstrates how SQL, Python, and Streamlit can be used together to analyze football tournament data. It is still being improved, but the foundation is in place for a strong sports analytics portfolio project.
+This project demonstrates a full, disciplined data pipeline — from raw tournament data through SQL analytics and a Python API to a themed, component-driven Streamlit dashboard — built as a portfolio-quality sports analytics product rather than a single analysis script.

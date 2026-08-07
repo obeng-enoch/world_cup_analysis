@@ -259,6 +259,86 @@ body,
 
 }}
 
+/* Leader Card */
+
+.leader-card {{
+
+    display: flex;
+
+    flex-direction: column;
+
+}}
+
+
+/* Leader Header */
+
+.leader-header {{
+
+    display: flex;
+
+    align-items: center;
+
+    gap: {ICON_TEXT_GAP}px;
+
+}}
+
+
+/* Leader Title */
+
+.leader-title {{
+
+    color: {TEXT_SECONDARY};
+
+    font-size: {CARD_TITLE["size"]}px;
+
+    font-weight: {CARD_TITLE["weight"]};
+
+}}
+
+
+/* Leader Name */
+
+.leader-name {{
+
+    color: {TEXT_PRIMARY};
+
+    font-size: {METRIC_VALUE["size"]}px;
+
+    font-weight: {METRIC_VALUE["weight"]};
+
+    margin-top: {ICON_TEXT_GAP}px;
+
+}}
+
+
+/* Leader Subtitle */
+
+.leader-subtitle {{
+
+    color: {TEXT_SECONDARY};
+
+    font-size: {BODY["size"]}px;
+
+    font-weight: {BODY["weight"]};
+
+    margin-top: 2px;
+
+}}
+
+
+/* Leader Value */
+
+.leader-value {{
+
+    color: {TEXT_PRIMARY};
+
+    font-size: {METRIC_DELTA_SIZE}px;
+
+    font-weight: 600;
+
+    margin-top: {ICON_TEXT_GAP}px;
+
+}}
 
 /* Section Heading (used by dashboard/components/headings.py) */
 

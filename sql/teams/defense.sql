@@ -23,4 +23,4 @@ JOIN teams AS t
     ON tm.team_id = t.team_id
 GROUP BY t.fifa_code
 ORDER BY goals_conceded_per_match ASC, clean_sheets DESC
-LIMIT 10;
+LIMIT 6;

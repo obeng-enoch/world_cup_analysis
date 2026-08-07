@@ -4,7 +4,6 @@ from dashboard.theme.icons import GOAL, MATCH, PLAYER, WORLD
 from dashboard.components.charts import plot_stage_goals_chart
 from dashboard.theme.css import load_css
 from dashboard.layout import section, kpi_grid, two_columns, three_columns, chart_row
-
 from dashboard.utils.dashboard_data import (
     get_tournament_summary,
     get_tournament_awards,
@@ -78,7 +77,7 @@ with awards_col:
                 "team": "Team",
             }),
             hide_index=True,
-            height=210,
+            height=255,
             width="stretch",
         )
 

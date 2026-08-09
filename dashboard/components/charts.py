@@ -597,3 +597,410 @@ def plot_best_defense_chart(df):
     )
 
     return _style_dashboard_chart(fig, height=260)
+
+
+def plot_goal_timing_chart(df):
+    fig = px.bar(
+        df,
+        x="time_window",
+        y="goals",
+        text="goals",
+        category_orders={
+            "time_window": [
+                "0-15",
+                "16-30",
+                "31-45",
+                "46-60",
+                "61-75",
+                "76-90",
+                "90+",
+            ]
+        },
+    )
+
+    fig.update_traces(
+        textposition="outside",
+        hovertemplate=(
+            "<b>%{x} minutes</b><br>"
+            "Goals: %{y}<extra></extra>"
+        ),
+    )
+
+    fig.update_xaxes(
+        showgrid=False,
+    )
+
+    fig.update_yaxes(
+        title_text="Goals Scored",
+        showgrid=True,
+    )
+
+    return _style_dashboard_chart(fig, height=260)
+
+
+def plot_match_result_distribution_chart(df):
+    total_matches = df["matches"].sum()
+
+    fig = px.pie(
+        df,
+        names="result_type",
+        values="matches",
+        hole=0.55,
+    )
+
+    fig.update_traces(
+        textposition="outside",
+        textinfo="percent",
+        hovertemplate=(
+            "<b>%{label}</b><br>"
+            "Matches: %{value}<br>"
+            "Share: %{percent}"
+            "<extra></extra>"
+        ),
+    )
+
+    fig.add_annotation(
+        text=(
+            f"<b>{total_matches}</b>"
+            "<br><span style='font-size:12px'>Matches</span>"
+        ),
+        x=0.5,
+        y=0.5,
+        showarrow=False,
+    )
+
+    fig.update_layout(
+        height=420,
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.15,
+            xanchor="center",
+            x=0.5,
+        ),
+    )
+
+    return _style_dashboard_chart(fig, height=260)
+
+def plot_club_goal_contributions_chart(
+    data: pd.DataFrame,
+    *,
+    height: int = 260,
+) -> go.Figure:
+    """
+    Horizontal bar chart showing the top clubs by
+    total goal contributions.
+    """
+
+    chart_data = (
+        data.head(10)
+        .sort_values("goal_contributions", ascending=True)
+        .copy()
+    )
+
+    chart_data["club"] = (
+        chart_data["club_team"]
+        .apply(_wrap_axis_label)
+    )
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=chart_data["goal_contributions"],
+            y=chart_data["club"],
+            orientation="h",
+            marker=dict(color=PRIMARY),
+            text=chart_data["goal_contributions"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            cliponaxis=False,
+            customdata=chart_data[
+                [
+                    "goals",
+                    "assists",
+                    "players_sent",
+                ]
+            ],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Goal Contributions: <b>%{x}</b><br>"
+                "Goals: %{customdata[0]}<br>"
+                "Assists: %{customdata[1]}<br>"
+                "Players Sent: %{customdata[2]}"
+                "<extra></extra>"
+            ),
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Goal Contributions",
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        title_font=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+    )
+
+    fig.update_yaxes(
+        showgrid=False,
+        tickfont=dict(
+            color=TEXT_PRIMARY,
+            size=11,
+        ),
+    )
+
+    return fig
+
+def plot_club_minutes_played_chart(
+    data: pd.DataFrame,
+    *,
+    height: int = 260,
+) -> go.Figure:
+    """
+    Horizontal bar chart showing clubs by total minutes played.
+    """
+
+    chart_data = (
+        data.head(10)
+        .sort_values("total_minutes_played", ascending=True)
+        .copy()
+    )
+
+    chart_data["club"] = (
+        chart_data["club_team"]
+        .apply(_wrap_axis_label)
+    )
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=chart_data["total_minutes_played"],
+            y=chart_data["club"],
+            orientation="h",
+            marker=dict(color=ACCENT),
+            text=chart_data["total_minutes_played"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            cliponaxis=False,
+            customdata=chart_data[
+                [
+                    "players_sent",
+                    "avg_minutes_per_player",
+                ]
+            ],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Total Minutes: <b>%{x:,.0f}</b><br>"
+                "Players Sent: %{customdata[0]}<br>"
+                "Average Minutes / Player: %{customdata[1]:,.2f}"
+                "<extra></extra>"
+            ),
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Minutes Played",
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        title_font=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+    )
+
+    fig.update_yaxes(
+        showgrid=False,
+        tickfont=dict(
+            color=TEXT_PRIMARY,
+            size=11,
+        ),
+    )
+
+    return fig
+
+def plot_club_representation_chart(
+    data: pd.DataFrame,
+    *,
+    height: int = 260,
+) -> go.Figure:
+    """
+    Horizontal bar chart showing clubs with the most
+    players represented at the tournament.
+    """
+
+    chart_data = (
+        data.head(10)
+        .sort_values("players_sent", ascending=True)
+        .copy()
+    )
+
+    chart_data["club"] = (
+        chart_data["club_team"]
+        .apply(_wrap_axis_label)
+    )
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=chart_data["players_sent"],
+            y=chart_data["club"],
+            orientation="h",
+            marker=dict(color=PRIMARY),
+            text=chart_data["players_sent"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            cliponaxis=False,
+            customdata=chart_data["countries_represented"],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Players Represented: <b>%{x}</b><br>"
+                "Countries Represented: %{customdata}"
+                "<extra></extra>"
+            ),
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Players Represented",
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        title_font=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+    )
+
+    fig.update_yaxes(
+        showgrid=False,
+        tickfont=dict(
+            color=TEXT_PRIMARY,
+            size=11,
+        ),
+    )
+
+    return fig
+
+def plot_club_value_chart(
+    data: pd.DataFrame,
+    *,
+    height: int = 260,
+) -> go.Figure:
+    """
+    Horizontal bar chart showing clubs by total squad
+    market value represented at the tournament.
+    """
+
+    chart_data = (
+        data.head(10)
+        .sort_values("total_market_value_eur", ascending=True)
+        .copy()
+    )
+
+    chart_data["club"] = (
+        chart_data["club_team"]
+        .apply(_wrap_axis_label)
+    )
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=chart_data["total_market_value_eur"],
+            y=chart_data["club"],
+            orientation="h",
+            marker=dict(color=ACCENT),
+            text=chart_data["total_market_value_eur"],
+            texttemplate="€%{text:,.0s}",
+            textposition="outside",
+            cliponaxis=False,
+            customdata=chart_data[
+                [
+                    "players_sent",
+                    "avg_market_value_eur",
+                ]
+            ],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Total Market Value: "
+                "<b>€%{x:,.0f}</b><br>"
+                "Players Sent: %{customdata[0]}<br>"
+                "Average Player Value: "
+                "€%{customdata[1]:,.0f}"
+                "<extra></extra>"
+            ),
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Market Value (€)",
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        title_font=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        tickformat="~s",
+    )
+
+    fig.update_yaxes(
+        showgrid=False,
+        tickfont=dict(
+            color=TEXT_PRIMARY,
+            size=11,
+        ),
+    )
+
+    return fig

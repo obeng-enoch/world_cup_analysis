@@ -38,6 +38,24 @@ from src.analytics.teams import (
 from src.analytics.awards import get_awards
 from src.analytics.teams import get_tournament_finish
 
+from src.analytics.matches import (
+    get_highest_scoring,
+    get_biggest_wins,
+    get_biggest_upsets,
+    get_goal_timing,
+    get_match_results,
+    get_match_result_distribution,
+    get_possession_dominant,
+)
+
+from src.analytics.clubs import (
+    get_club_medals,
+    get_discipline,
+    get_goal_contributions,
+    get_minutes_played,
+    get_most_representation,
+    get_valuable,
+)
 
 def get_homepage_metrics():
     """
@@ -177,3 +195,65 @@ def get_team_tables():
         "discipline": get_discipline(),
     }
 
+def get_match_summary():
+    """
+    Returns datasets used by the Matches page charts.
+    """
+
+    return {
+        "highest_scoring": get_highest_scoring().iloc[0],
+        "biggest_wins": get_biggest_wins().iloc[0],
+        "biggest_upsets": get_biggest_upsets().iloc[0],
+    }
+
+def get_match_charts():
+    return {
+        "goal_timing": get_goal_timing(),
+        "match_result_distribution": get_match_result_distribution(),
+    }
+
+def get_match_tables():
+    return {
+        "match_results": get_match_results(),
+        "possession": get_possession_dominant(),
+    }
+
+def get_club_summary():
+    """
+    Returns the headline club achievements shown
+    in the Clubs page highlight cards.
+    """
+
+    most_represented = get_most_representation().iloc[0]
+    most_valuable = get_valuable().iloc[0]
+    top_contributor = get_goal_contributions().iloc[0]
+
+    return {
+        "most_represented": most_represented,
+        "most_valuable": most_valuable,
+        "top_contributor": top_contributor,
+    }
+
+
+def get_club_charts():
+    """
+    Returns datasets required by the Clubs page charts.
+    """
+
+    return {
+        "goal_contributions": get_goal_contributions(),
+        "minutes_played": get_minutes_played(),
+        "most_representation": get_most_representation(),
+        "valuable": get_valuable(),
+    }
+
+
+def get_club_tables():
+    """
+    Returns supporting club analysis tables.
+    """
+
+    return {
+        "discipline": get_discipline(),
+        "club_medals": get_club_medals(),
+    }

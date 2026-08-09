@@ -1,6 +1,5 @@
 from src.analytics.database import get_dataframe
 
-
 def get_biggest_upsets():
     return get_dataframe("match_analysis/biggest_upsets.sql")
 
@@ -30,3 +29,6 @@ def get_match_results():
 
 def get_possession_dominant():
     return get_dataframe("match_analysis/possession_dominant.sql")
+
+def get_match_result_distribution():
+    return get_dataframe("match_analysis/match_result_distribution.sql")

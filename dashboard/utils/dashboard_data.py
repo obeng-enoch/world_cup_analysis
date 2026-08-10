@@ -57,6 +57,17 @@ from src.analytics.clubs import (
     get_valuable,
 )
 
+from src.analytics.venues import (
+    get_average_stats,
+    get_country_hosted,
+    get_directory,
+    get_elevation_accuracy,
+    get_elevation_ranked,
+    get_goals_per_venue,
+    get_highest_scoring,
+    get_stage_distribution,
+)
+
 def get_homepage_metrics():
     """
     Return all metrics required by the dashboard home page.
@@ -256,4 +267,34 @@ def get_club_tables():
     return {
         "discipline": get_discipline(),
         "club_medals": get_club_medals(),
+    }
+
+def get_venue_summary():
+    highest_scoring = get_highest_scoring().iloc[0]
+    busiest_venue = get_goals_per_venue().sort_values(
+        "matches_hosted",
+        ascending=False,
+    ).iloc[0]
+    highest_elevation = get_elevation_ranked().iloc[0]
+
+    return {
+        "highest_scoring": highest_scoring,
+        "busiest_venue": busiest_venue,
+        "highest_elevation": highest_elevation,
+    }
+
+def get_venue_charts():
+    return {
+        "goals_per_venue": get_goals_per_venue(),
+        "match_day_style": get_average_stats(),
+        "elevation_accuracy": get_elevation_accuracy(),
+        "stage_distribution": get_stage_distribution(),
+    }
+
+def get_venue_tables():
+    return {
+        "directory": get_directory(),
+        "highest_scoring": get_highest_scoring(),
+        "elevation_ranked": get_elevation_ranked(),
+        "country_hosted": get_country_hosted(),
     }

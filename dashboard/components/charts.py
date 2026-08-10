@@ -1004,3 +1004,148 @@ def plot_club_value_chart(
     )
 
     return fig
+
+def plot_venue_goals_chart(df):
+    data = df.copy()
+
+    data["venue_label"] = data["stadium_name"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x="avg_goals_per_match",
+        y="venue_label",
+        orientation="h",
+        text="avg_goals_per_match",
+        custom_data=[
+            "stadium_name",
+            "matches_hosted",
+            "total_goals",
+        ],
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:.2f}",
+        textposition="outside",
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "Matches: %{customdata[1]}<br>"
+            "Total goals: %{customdata[2]}<br>"
+            "Avg goals/match: %{x:.2f}"
+            "<extra></extra>"
+        ),
+    )
+
+    fig.update_layout(
+        xaxis_title="Average Goals per Match",
+        yaxis_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=250)
+
+def plot_venue_match_day_style_chart(df):
+    data = df.copy()
+
+    data["venue_label"] = data["stadium_name"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x=[
+            "avg_corners",
+            "avg_fouls",
+            "avg_offsides",
+        ],
+        y="venue_label",
+        orientation="h",
+        barmode="group",
+        custom_data=["stadium_name"],
+    )
+
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "%{fullData.name}: %{x:.2f}"
+            "<extra></extra>"
+        )
+    )
+
+    fig.update_layout(
+        xaxis_title="Average per Match",
+        yaxis_title=None,
+        legend_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=250)
+
+def plot_venue_elevation_effects_chart(df):
+    data = df.copy()
+
+    fig = px.bar(
+        data,
+        x="elevation_band",
+        y="avg_goals_per_match",
+        text="avg_goals_per_match",
+        custom_data=[
+            "matches_played",
+            "avg_combined_xg",
+        ],
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:.2f}",
+        textposition="outside",
+        hovertemplate=(
+            "<b>%{x}</b><br>"
+            "Matches: %{customdata[0]}<br>"
+            "Avg goals/match: %{y:.2f}<br>"
+            "Avg combined xG: %{customdata[1]:.2f}"
+            "<extra></extra>"
+        ),
+    )
+
+    fig.update_layout(
+        xaxis_title="Elevation Band",
+        yaxis_title="Average Goals per Match",
+    )
+
+    return _style_dashboard_chart(fig, height=250)
+
+def plot_venue_stage_distribution_chart(df):
+    data = df.copy()
+
+    data["venue_label"] = data["stadium_name"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x="matches_hosted",
+        y="venue_label",
+        color="stage",
+        orientation="h",
+        barmode="stack",
+        custom_data=[
+            "stadium_name",
+            "stage",
+        ],
+    )
+
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "Stage: %{customdata[1]}<br>"
+            "Matches: %{x}"
+            "<extra></extra>"
+        )
+    )
+
+    fig.update_layout(
+        xaxis_title="Matches Hosted",
+        yaxis_title=None,
+        legend_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=250)

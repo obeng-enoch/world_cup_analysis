@@ -1,6 +1,7 @@
 from dashboard.components.charts import (
     plot_goal_timing_chart,
     plot_match_result_distribution_chart,
+    plot_stage_goals_chart,
 )
 from dashboard.components.leader import leader_card
 from dashboard.layout import (
@@ -13,6 +14,7 @@ from dashboard.utils.dashboard_data import (
     get_match_summary,
     get_match_charts,
     get_match_tables,
+    get_goals_per_stage_chart,
 )
 
 from dashboard.theme.icons import GOAL, PLAYER
@@ -30,6 +32,7 @@ load_css()
 summary = get_match_summary()
 charts = get_match_charts()
 tables = get_match_tables()
+goals_by_stage = get_goals_per_stage_chart()
 
 
 # Match Highlights
@@ -73,7 +76,7 @@ with section("Match Highlights"):
 # Match Trends
 
 with section("Match Trends"):
-    left, right = two_columns()
+    left, middle, right = three_columns()
 
     with left:
         with st.container(border=True):
@@ -83,6 +86,39 @@ with section("Match Trends"):
             st.plotly_chart(
                 plot_goal_timing_chart(
                     charts["goal_timing"]
+                ),
+                width="stretch",
+            )
+
+    with middle:
+        with st.container(border=True):
+            chart_title_col, control_col = st.columns([3, 2])
+    
+            with chart_title_col:
+                st.caption("Tournament scoring by stage")
+    
+            with control_col:
+                selected_measure = st.segmented_control(
+                    "Chart measure",
+                    options=["Total goals", "Goals per match"],
+                    default="Total goals",
+                    key="stage_measure",
+                    label_visibility="collapsed",
+                )
+    
+            if selected_measure == "Total goals":
+                value_column = "total_goals"
+                value_label = "Total goals"
+            else:
+                value_column = "avg_goals_per_match"
+                value_label = "Goals per match"
+    
+            st.plotly_chart(
+                plot_stage_goals_chart(
+                    goals_by_stage,
+                    value_column=value_column,
+                    value_label=value_label,
+                    height=210,
                 ),
                 width="stretch",
             )

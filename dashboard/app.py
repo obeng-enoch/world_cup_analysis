@@ -76,8 +76,6 @@ Use the **sidebar** to explore:
 - Matches
 - Venues
 - Referees
-- Events
-- Awards
 """
 )
 

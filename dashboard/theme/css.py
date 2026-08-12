@@ -38,6 +38,7 @@ from dashboard.theme.spacing import (
     CARD_PADDING,
     ICON_TEXT_GAP,
     SECTION_MARGIN,
+    PAGE_TOP_PADDING
 )
 
 from dashboard.theme.typography import (
@@ -62,6 +63,12 @@ body,
 
 }}
 
+/* Page container */
+
+.block-container {{
+
+    padding-top:{PAGE_TOP_PADDING}px;
+}}
 
 /* Dashboard Card */
 

@@ -1149,3 +1149,198 @@ def plot_venue_stage_distribution_chart(df):
     )
 
     return _style_dashboard_chart(fig, height=250)
+
+def plot_referee_matches_chart(df):
+    data = df.copy()
+
+    data["referee_label"] = data["referee"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x="matches_officiated",
+        y="referee_label",
+        orientation="h",
+        text="matches_officiated",
+        custom_data=[
+            "referee",
+            "country",
+            "pre_tournament_avg_cards",
+        ],
+    )
+
+    fig.update_traces(
+        texttemplate="%{text}",
+        textposition="outside",
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "Country: %{customdata[1]}<br>"
+            "Matches officiated: %{x}<br>"
+            "Pre-tournament avg cards: "
+            "%{customdata[2]:.1f}"
+            "<extra></extra>"
+        ),
+    )
+
+    fig.update_layout(
+        xaxis_title="Matches Officiated",
+        yaxis_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=250)
+
+def plot_referee_fouls_chart(df):
+    data = df.copy()
+
+    data["referee_label"] = data["referee"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x="avg_fouls_per_match",
+        y="referee_label",
+        orientation="h",
+        text="avg_fouls_per_match",
+        custom_data=[
+            "referee",
+            "country",
+            "matches_officiated",
+        ],
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:.2f}",
+        textposition="outside",
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "Country: %{customdata[1]}<br>"
+            "Matches officiated: %{customdata[2]}<br>"
+            "Avg fouls/match: %{x:.2f}"
+            "<extra></extra>"
+        ),
+    )
+
+    fig.update_layout(
+        xaxis_title="Average Fouls per Match",
+        yaxis_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=250)
+
+def plot_referee_card_comparison_chart(df):
+    data = df.copy()
+
+    data["referee_label"] = data["referee"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x=[
+            "actual_avg_cards_per_game",
+            "pre_tournament_avg_cards",
+        ],
+        y="referee_label",
+        orientation="h",
+        barmode="group",
+        custom_data=[
+            "referee",
+            "country",
+            "matches_officiated",
+            "yellow_cards",
+            "red_cards",
+            "cards_delta",
+        ],
+    )
+
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "Country: %{customdata[1]}<br>"
+            "Matches officiated: %{customdata[2]}<br>"
+            "Yellow cards: %{customdata[3]}<br>"
+            "Red cards: %{customdata[4]}<br>"
+            "%{fullData.name}: %{x:.2f}<br>"
+            "Difference: %{customdata[5]:+.2f}"
+            "<extra></extra>"
+        )
+    )
+
+    fig.update_layout(
+        xaxis_title="Average Cards per Match",
+        yaxis_title=None,
+        legend_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=280)
+
+def plot_referee_stage_workload_chart(df):
+    data = df.copy()
+
+    data["referee_label"] = data["referee"].apply(
+        _wrap_axis_label
+    )
+
+    fig = px.bar(
+        data,
+        x="matches_officiated",
+        y="referee_label",
+        color="stage",
+        orientation="h",
+        barmode="stack",
+        custom_data=[
+            "referee",
+            "stage",
+        ],
+    )
+
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "Stage: %{customdata[1]}<br>"
+            "Matches: %{x}"
+            "<extra></extra>"
+        )
+    )
+
+    fig.update_layout(
+        xaxis_title="Matches Officiated",
+        yaxis_title=None,
+        legend_title=None,
+    )
+
+    return _style_dashboard_chart(fig, height=300)
+
+def plot_event_counts_chart(data, height=210):
+    chart_data = data.sort_values("avg_events_per_match", ascending=True)
+
+    fig = px.bar(
+        chart_data,
+        x="avg_events_per_match",
+        y="event_type",
+        orientation="h",
+        custom_data=["total_events"],
+    )
+
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{y}</b><br>"
+            "Average per match: %{x:.2f}<br>"
+            "Total events: %{customdata[0]}<extra></extra>"
+        )
+    )
+
+    fig.update_xaxes(
+        title="Average events per match",
+    )
+
+    fig.update_yaxes(
+        title=None,
+    )
+
+    return _style_dashboard_chart(
+        fig,
+        height=height,
+    )

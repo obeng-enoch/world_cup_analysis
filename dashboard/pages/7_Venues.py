@@ -27,13 +27,7 @@ load_css()
 
 # ---------------------------------------------------------
 # PAGE HEADER
-# ---------------------------------------------------------
-
-st.title("Venues")
-st.caption(
-    "Venue capacity, match load, scoring patterns, elevation, "
-    "and tournament activity"
-)
+# --------------------------------------------------------
 
 
 # ---------------------------------------------------------
@@ -49,14 +43,12 @@ tables = get_venue_tables()
 # VENUE HIGHLIGHTS
 # ---------------------------------------------------------
 
-section("Venue Highlights")
-
 highest_scoring = summary["highest_scoring"]
 busiest_venue = summary["busiest_venue"]
 highest_elevation = summary["highest_elevation"]
 
-
-col1, col2, col3 = three_columns()
+with section("Venue Highlights"):
+    col1, col2, col3 = three_columns()
 
 with col1:
     leader_card(

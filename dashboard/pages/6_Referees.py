@@ -27,12 +27,6 @@ load_css()
 # PAGE HEADER
 # ---------------------------------------------------------
 
-st.title("Referees")
-st.caption(
-    "Referee workload, foul patterns, card issuance, "
-    "and tournament-stage assignments"
-)
-
 # ---------------------------------------------------------
 # DATA
 # ---------------------------------------------------------
@@ -45,13 +39,13 @@ tables = get_referee_tables()
 # REFEREE HIGHLIGHTS
 # ---------------------------------------------------------
 
-section("Referee Highlights")
 
 most_used = summary["most_used"]
 highest_fouls = summary["highest_fouls"]
 highest_cards = summary["highest_cards"]
 
-col1, col2, col3 = three_columns()
+with section("Referee Highlights"):
+    col1, col2, col3 = three_columns()
 
 with col1:
     leader_card(

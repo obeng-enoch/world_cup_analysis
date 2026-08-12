@@ -67,7 +67,15 @@ body,
 
 .block-container {{
 
-    padding-top:{PAGE_TOP_PADDING}px;
+    padding-top:3.5rem;
+    padding-bottom:2rem;
+
+}}
+
+/* Show Streamlit's floating header/toolbar */
+
+header[data-testid="stHeader"] {{
+    display: block;
 }}
 
 /* Dashboard Card */

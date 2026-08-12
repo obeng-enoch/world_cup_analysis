@@ -148,7 +148,6 @@ def kpi_grid(renderers: Sequence[Renderer], per_row: int = 4) -> None:
     for start in range(0, len(renderers), per_row):
         row = renderers[start:start + per_row]
         _render_renderers(row)
-    _section_gap()
 
 
 def chart_row(
@@ -168,7 +167,6 @@ def chart_row(
     the call site.
     """
     _render_renderers(list(charts), ratios=ratios)
-    _section_gap()
 
 
 def _section_gap() -> None:

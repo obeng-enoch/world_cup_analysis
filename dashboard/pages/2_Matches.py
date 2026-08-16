@@ -23,12 +23,10 @@ import streamlit as st
 
 
 # Load CSS
-
 load_css()
 
 
 # Load data
-
 summary = get_match_summary()
 charts = get_match_charts()
 tables = get_match_tables()
@@ -36,13 +34,11 @@ goals_by_stage = get_goals_per_stage_chart()
 
 
 # Match Highlights
-
 with section("Match Highlights"):
     highest_scoring_col, biggest_win_col, biggest_upset_col = three_columns()
 
     with highest_scoring_col:
         highest_scoring = summary["highest_scoring"]
-
         leader_card(
             "Highest Scoring Match",
             highest_scoring["match"],
@@ -64,7 +60,6 @@ with section("Match Highlights"):
 
     with biggest_upset_col:
         biggest_upset = summary["biggest_upsets"]
-
         leader_card(
             "Biggest Upset",
             biggest_upset["match"],
@@ -74,15 +69,10 @@ with section("Match Highlights"):
         )
 
 # Match Trends
-
-with section("Match Trends"):
     left, middle, right = three_columns()
-
     with left:
         with st.container(border=True):
-
-            st.caption("Goal Timing")
-
+            st.caption("Goals Timing")
             st.plotly_chart(
                 plot_goal_timing_chart(
                     charts["goal_timing"]
@@ -93,7 +83,6 @@ with section("Match Trends"):
     with middle:
         with st.container(border=True):
             chart_title_col, control_col = st.columns([3, 2])
-    
             with chart_title_col:
                 st.caption("Tournament scoring by stage")
     
@@ -118,16 +107,14 @@ with section("Match Trends"):
                     goals_by_stage,
                     value_column=value_column,
                     value_label=value_label,
-                    height=210,
+                    height=145,
                 ),
                 width="stretch",
             )
 
     with right:
         with st.container(border=True):
-
             st.caption("Match Results")
-
             st.plotly_chart(
                 plot_match_result_distribution_chart(
                     charts["match_result_distribution"]
@@ -135,32 +122,25 @@ with section("Match Trends"):
                 width="stretch",
             )
 
-
 # Detailed Match Analysis
-
-with section("Detailed Match Analysis"):
     left, right = two_columns()
 
     with left:
         with st.container(border=True):
-
             st.caption("Match Results")
-
             st.dataframe(
                 tables["match_results"],
                 hide_index=True,
                 width="stretch",
-                height=260,
+                height=180,
             )
 
     with right:
         with st.container(border=True):
-
             st.caption("Possession Dominance")
-
             st.dataframe(
                 tables["possession"],
                 hide_index=True,
                 width="stretch",
-                height=260,
+                height=180,
             )

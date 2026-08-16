@@ -33,39 +33,40 @@ with section("Finalists"):
     with third_place_col:
         podium_card("Third place", summary["third_place"], medal="bronze")
 
-event_col, awards_col = two_columns(ratio=(3, 2))
+    event_col, awards_col = two_columns(ratio=(3, 2))
 
-with event_col:
-    with st.container(border=True):
-        st.caption("Match events")
+    with event_col:
+        with st.container(border=True):
+            st.caption("Match events")
 
-        st.plotly_chart(
-            plot_event_counts_chart(
-                events,
+            st.plotly_chart(
+                plot_event_counts_chart(
+                    events,
+                    height=210,
+                ),
+                width="stretch",
+            )
+
+    with awards_col:
+        with st.container(border=True):
+            st.caption("Tournament awards")
+
+            st.dataframe(
+                awards.rename(columns={
+                    "player_name": "Player",
+                    "award_name": "Award",
+                    "team": "Team",
+                }),
+                hide_index=True,
                 height=210,
-            ),
-            width="stretch",
-        )
+                width="stretch",
+            )
 
-with awards_col:
-    with st.container(border=True):
-        st.caption("Tournament awards")
-
+    with st.container (border=True):
+        st.caption("Tournament standings")
         st.dataframe(
-            awards.rename(columns={
-                "player_name": "Player",
-                "award_name": "Award",
-                "team": "Team",
-            }),
+            standings.drop(columns="finish_rank"),
             hide_index=True,
-            height=255,
+            height=180,
             width="stretch",
         )
-
-with section("Tournament standings"):
-    st.dataframe(
-        standings.drop(columns="finish_rank"),
-        hide_index=True,
-        height=180,
-        width="stretch",
-    )

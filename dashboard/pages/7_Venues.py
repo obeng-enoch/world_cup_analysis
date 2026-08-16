@@ -21,27 +21,18 @@ from dashboard.theme.icons import CHART, TROPHY, VENUE
 from dashboard.theme.colors import PRIMARY
 from dashboard.theme.css import load_css
 
-
+# load css
 load_css()
 
 
-# ---------------------------------------------------------
-# PAGE HEADER
-# --------------------------------------------------------
 
-
-# ---------------------------------------------------------
-# DATA
-# ---------------------------------------------------------
-
+# load data
 summary = get_venue_summary()
 charts = get_venue_charts()
 tables = get_venue_tables()
 
 
-# ---------------------------------------------------------
 # VENUE HIGHLIGHTS
-# ---------------------------------------------------------
 
 highest_scoring = summary["highest_scoring"]
 busiest_venue = summary["busiest_venue"]
@@ -81,89 +72,75 @@ with col3:
     )
 
 
-# ---------------------------------------------------------
 # VENUE PERFORMANCE
-# ---------------------------------------------------------
+left, right = two_columns()
 
-section("Venue Performance")
+with left:
+    with st.container(border=True):
+        st.caption("Venue Performance")
+        st.plotly_chart(
+            plot_venue_goals_chart(
+                charts["goals_per_venue"]
+            ),
+            width="stretch",
+        )
 
-col1, col2 = two_columns()
-
-with col1:
-    st.plotly_chart(
-        plot_venue_goals_chart(
-            charts["goals_per_venue"]
-        ),
-        use_container_width=True,
-    )
-
-with col2:
-    st.plotly_chart(
-        plot_venue_match_day_style_chart(
-            charts["match_day_style"]
-        ),
-        use_container_width=True,
-    )
+with right:
+    with st.container(border=True):
+        st.caption("Average corners in each stadium")
+        st.plotly_chart(
+            plot_venue_match_day_style_chart(
+                charts["match_day_style"]
+            ),
+            use_container_width=True,
+        )
 
 
-# ---------------------------------------------------------
 # ELEVATION & TOURNAMENT LOAD
-# ---------------------------------------------------------
-
 section("Elevation & Tournament Load")
 
 col1, col2 = two_columns()
-
 with col1:
-    st.plotly_chart(
-        plot_venue_elevation_effects_chart(
-            charts["elevation_accuracy"]
-        ),
-        use_container_width=True,
-    )
+    with st.container(border=True):
+        st.caption("Average goals per match")
+        st.plotly_chart(
+            plot_venue_elevation_effects_chart(
+                charts["elevation_accuracy"]
+            ),
+            use_container_width=True,
+        )
 
 with col2:
-    st.plotly_chart(
-        plot_venue_stage_distribution_chart(
-            charts["stage_distribution"]
-        ),
-        use_container_width=True,
-    )
+    with st.container(border=True):
+        st.caption("Matches stages")
+        st.plotly_chart(
+            plot_venue_stage_distribution_chart(
+                charts["stage_distribution"]
+            ),
+            use_container_width=True,
+        )
 
 
-# VENUE DIRECTORY
-
-section("Venue Directory")
-
-st.dataframe(
-    tables["directory"],
-    use_container_width=True,
-    hide_index=True,
-)
-
-
-# ---------------------------------------------------------
 # VENUE DETAILS
-# ---------------------------------------------------------
-
-section("Venue Details")
 
 col1, col2 = two_columns()
 
 with col1:
-    st.subheader("Highest-Scoring Matches")
-
-    st.dataframe(
-        tables["highest_scoring"],
-        use_container_width=True,
-        hide_index=True,
-    )
+    with st.container(border=True):
+        st.caption("Venue Directory")
+        st.dataframe(
+            tables["directory"],
+            hide_index=True,
+            width="stretch",
+            height=180,
+        )
 
 with col2:
-    st.subheader("Venue Elevation Ranking")
-
-    st.dataframe(
-        tables["elevation_ranked"],
-        use_container_width=True,
-        hide_index=True,
-    )
+    with st.container(border=True):
+        st.caption("Venue Elevation Ranking")
+        st.dataframe(
+            tables["elevation_ranked"],
+            hide_index=True,
+            width="stretch",
+            height=180,
+        )

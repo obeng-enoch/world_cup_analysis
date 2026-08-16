@@ -48,4 +48,4 @@ GROUP BY t.fifa_code
 ORDER BY
 goals DESC,
 goals_per_match DESC
-LIMIT 5;
+LIMIT 10;

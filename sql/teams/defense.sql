@@ -1,6 +1,4 @@
--- ==========================================================
 -- SECTION C — DEFENSE
--- ==========================================================
 
 -- 4) Best defensive teams (goals conceded, clean sheets)
 WITH team_matches AS (
@@ -23,4 +21,4 @@ JOIN teams AS t
     ON tm.team_id = t.team_id
 GROUP BY t.fifa_code
 ORDER BY goals_conceded_per_match ASC, clean_sheets DESC
-LIMIT 6;
+LIMIT 10;

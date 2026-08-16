@@ -23,26 +23,16 @@ from dashboard.theme.colors import PRIMARY
 
 import streamlit as st
 
+# load css
 load_css()
 
-
-
-# ---------------------------------------------------------
-# DATA
-# ---------------------------------------------------------
-
+# load data
 summary = get_club_summary()
 charts = get_club_charts()
 tables = get_club_tables()
 
-
-# ---------------------------------------------------------
-# CLUB HIGHLIGHTS
-# ---------------------------------------------------------
-
-# Load data
 most_represented = summary["most_represented"]
-most_valuable = summary["most_valuable"]
+man_of_the_match_clubs = summary["man_of_the_match_clubs"]
 top_contributor = summary["top_contributor"]
 
 with section("Club Highlights"):
@@ -63,10 +53,10 @@ with section("Club Highlights"):
 
     with col2:
         leader_card(
-            title="Most Valuable Club",
-            name=most_valuable["club_team"],
-            subtitle=f'{most_valuable["players_sent"]} players sent',
-            value=f'€{most_valuable["total_market_value_eur"]:,.0f}',
+            title="Club Whose Players Won Most MOTM Awards",
+            name=man_of_the_match_clubs["club_team"],
+            subtitle=f'{man_of_the_match_clubs["winning_players"]} award-winning players',
+            value=f'{man_of_the_match_clubs["man_of_the_match_awards"]} MOTM awards',
             icon=TROPHY,
             icon_color=PRIMARY,
         )
@@ -85,77 +75,61 @@ with section("Club Highlights"):
         )
 
 
-# ---------------------------------------------------------
 # CLUB PERFORMANCE
-# ---------------------------------------------------------
-
-
-with section("Club Performance"):
-    col1, col2 = two_columns()
+col1, col2, col3 = three_columns()
 
 with col1:
-    st.plotly_chart(
-        plot_club_goal_contributions_chart(
-            charts["goal_contributions"]
-        ),
-        use_container_width=True,
-    )
+    with st.container(border=True):
+        st.caption("Club Representation")
+        st.plotly_chart(
+            plot_club_representation_chart(
+                charts["most_representation"]
+            ),
+            width="stretch",
+        )
 
 with col2:
-    st.plotly_chart(
-        plot_club_minutes_played_chart(
-            charts["minutes_played"]
-        ),
-        use_container_width=True,
-    )
+    with st.container(border=True):
+        st.caption("Clubs Whose Players have had most minutes")
+        st.plotly_chart(
+            plot_club_minutes_played_chart(
+                charts["minutes_played"]
+            ),
+            width="stretch",
+        )
+
+with col3:
+    with st.container(border=True):
+        st.caption("Club Performance")
+        st.plotly_chart(
+            plot_club_goal_contributions_chart(
+                charts["goal_contributions"]
+            ),
+            width="stretch",
+        )
 
 
-# ---------------------------------------------------------
-# CLUB LANDSCAPE
-# ---------------------------------------------------------
-
-with section("Club Landscape"):
-    col1, col2 = two_columns()
-
-with col1:
-    st.plotly_chart(
-        plot_club_representation_chart(
-            charts["most_representation"]
-        ),
-        use_container_width=True,
-    )
-
-with col2:
-    st.plotly_chart(
-        plot_club_value_chart(
-            charts["valuable"]
-        ),
-        use_container_width=True,
-    )
 
 
-# ---------------------------------------------------------
 # CLUB INTELLIGENCE
-# ---------------------------------------------------------
-
-section("Club Intelligence")
-
 col1, col2 = two_columns()
 
 with col1:
-    st.subheader("Club Discipline")
-
-    st.dataframe(
-        tables["discipline"],
-        use_container_width=True,
-        hide_index=True,
-    )
+    with st.container(border=True):
+        st.caption("Club Discipline")
+        st.dataframe(
+            tables["discipline"],
+            hide_index=True,
+            width="stretch",
+            height=180,
+        )
 
 with col2:
-    st.subheader("Club Representation in Medal Teams")
-
-    st.dataframe(
-        tables["club_medals"],
-        use_container_width=True,
-        hide_index=True,
-    )
+    with st.container(border=True):
+        st.caption("Club Representation in Medal Teams")
+        st.dataframe(
+            tables["club_medals"],
+            hide_index=True,
+            width="stretch",
+            height=180,
+        )

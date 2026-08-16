@@ -36,7 +36,13 @@ from src.analytics.teams import (
     get_tournament_finish,
 )
 
-from src.analytics.awards import get_awards
+from src.analytics.awards import (
+    get_awards,
+    get_man_of_the_match_players,
+    get_man_of_the_match_teams,
+    get_man_of_the_match_clubs,
+)
+
 from src.analytics.teams import get_tournament_finish
 
 from src.analytics.matches import (
@@ -119,12 +125,12 @@ def get_player_summary():
     in the KPI cards at the top of the Players page.
     """
     top_scorer = get_top_scorers().iloc[0]
-    top_assist = get_top_assists().iloc[0]
+    most_man_of_the_match_players = get_man_of_the_match_players().iloc[0]
     top_goalkeeper = get_clean_sheets().iloc[0]
 
     return {
         "top_scorer": top_scorer,
-        "top_assist": top_assist,
+        "most_man_of_the_match_players": most_man_of_the_match_players,
         "top_goalkeeper": top_goalkeeper,
     }
 
@@ -149,6 +155,7 @@ def get_player_charts():
     return {
         "goal_contributions": get_player_goal_contributions(),
         "top_saves": get_saves(),
+        "man_of_the_match_players":get_man_of_the_match_players(),
     }
 
 def get_discipline_tables():
@@ -180,6 +187,7 @@ def get_player_achievements():
     return {
         "hat_tricks": get_hat_tricks(),
         "multi_goal_matches": get_multi_goal_matches(),
+        "man_of_the_match": get_man_of_the_match_players(),
     }
 
 def get_team_summary():
@@ -207,6 +215,7 @@ def get_team_charts():
     return {
         "goals_by_team": get_highest_scoring_teams(),
         "best_defense": get_defense(),
+        "man_of_the_match_teams": get_man_of_the_match_teams(),
     }
 
 def get_team_tables():
@@ -249,12 +258,12 @@ def get_club_summary():
     """
 
     most_represented = get_most_representation().iloc[0]
-    most_valuable = get_valuable().iloc[0]
+    man_of_the_match_clubs = get_man_of_the_match_clubs().iloc[0]
     top_contributor = get_club_goal_contributions().iloc[0]
 
     return {
         "most_represented": most_represented,
-        "most_valuable": most_valuable,
+        "man_of_the_match_clubs": man_of_the_match_clubs,
         "top_contributor": top_contributor,
     }
 

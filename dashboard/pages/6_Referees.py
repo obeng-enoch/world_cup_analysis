@@ -21,25 +21,16 @@ from dashboard.theme.icons import CHART, TROPHY
 from dashboard.theme.colors import PRIMARY
 from dashboard.theme.css import load_css
 
+# load css
 load_css()
 
-# ---------------------------------------------------------
-# PAGE HEADER
-# ---------------------------------------------------------
 
-# ---------------------------------------------------------
-# DATA
-# ---------------------------------------------------------
-
+# load data
 summary = get_referee_summary()
 charts = get_referee_charts()
 tables = get_referee_tables()
 
-# ---------------------------------------------------------
 # REFEREE HIGHLIGHTS
-# ---------------------------------------------------------
-
-
 most_used = summary["most_used"]
 highest_fouls = summary["highest_fouls"]
 highest_cards = summary["highest_cards"]
@@ -77,13 +68,11 @@ with col3:
         icon_color=PRIMARY,
     )
 
-# ---------------------------------------------------------
+
 # REFEREE WORKLOAD
-# ---------------------------------------------------------
 
-section("Referee Workload")
-
-col1, col2 = two_columns()
+with section("Referee Workload"):
+    col1, col2 = two_columns()
 
 with col1:
     st.plotly_chart(
@@ -101,9 +90,8 @@ with col2:
         use_container_width=True,
     )
 
-# ---------------------------------------------------------
+
 # OFFICIATING STYLE
-# ---------------------------------------------------------
 
 section("Officiating Style")
 
@@ -131,10 +119,11 @@ st.plotly_chart(
 # RED-CARD INCIDENTS
 # ---------------------------------------------------------
 
-section("Red-Card Incidents")
-
-st.dataframe(
-    tables["red_cards"],
-    use_container_width=True,
-    hide_index=True,
-)
+with st.container(border=True):
+    st.caption("Red-Card Incidents")
+    st.dataframe(
+        tables["red_cards"],
+        hide_index=True,
+        width="stretch",
+        height=180
+    )

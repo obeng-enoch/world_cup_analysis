@@ -4,7 +4,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 import pandas as pd
-from dashboard.theme.constants import CHART_HEIGHT_COMPACT
+from dashboard.theme.constants import (
+    CHART_HEIGHT_THREE_COLUMN,
+    CHART_HEIGHT_TWO_COLUMN,
+)
 
 from dashboard.theme.colors import (
     ACCENT,
@@ -15,7 +18,8 @@ from dashboard.theme.colors import (
     TEXT_SECONDARY,
 )
 
-DEFAULT_HEIGHT = CHART_HEIGHT_COMPACT
+DEFAULT_HEIGHT = CHART_HEIGHT_THREE_COLUMN
+
 DEFAULT_TEMPLATE = "plotly_white"
 def _wrap_axis_label(label: str, max_words_per_line: int = 2) -> str:
     """
@@ -65,26 +69,21 @@ def _style_dashboard_chart(
     height: int,
     show_legend: bool = True,
 ) -> go.Figure:
-    """
-    Apply the dashboard styling used by all
-    football-specific Plotly charts.
-    """
-
     fig.update_layout(
         template="none",
         height=height,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         margin=dict(
-            l=100,
-            r=20,
-            t=20,
-            b=30,
+            l=12,
+            r=12,
+            t=28 if show_legend else 20,
+            b=28,
         ),
         font=dict(
             family="'Inter', 'Segoe UI', sans-serif",
             color=TEXT_PRIMARY,
-            size=12,
+            size=11,
         ),
         showlegend=show_legend,
         legend=dict(
@@ -100,6 +99,8 @@ def _style_dashboard_chart(
             font_color=TEXT_PRIMARY,
         ),
     )
+    fig.update_xaxes(automargin=True)
+    fig.update_yaxes(automargin=True)
 
     return fig
 
@@ -226,11 +227,82 @@ def plot_pie_chart(
         show_legend=True,
     )
 
+def plot_event_counts_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_TWO_COLUMN,
+) -> go.Figure:
+    """Interactive event frequency chart for the tournament overview"""
+
+    chart_data = data.sort_values(
+        "avg_events_per_match",
+        ascending=True,
+    )
+
+    fig = px.bar(
+        chart_data,
+        x="avg_events_per_match",
+        y="event_type",
+        orientation="h",
+        custom_data=["total_events"],
+    )
+
+    fig.update_traces(
+        marker=dict(
+            color=PRIMARY,
+            line=dict(width=0),
+        ),
+        hovertemplate=(
+            "<b>%{y}</b><br>"
+            "Average per match: <b>%{x:.2f}</b><br>"
+            "Total events: %{customdata[0]}<extra></extra>"
+        ),
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Average events per match",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=".1f",
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        title_font=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        )
+    )
+
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+    )
+
+    return fig
+
 def plot_stage_goals_chart(
     data: pd.DataFrame,
     value_column: str,
     value_label: str,
-    height: int = 210,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
 ) -> go.Figure:
     """Interactive goals-by-stage chart for the tournament overview."""
 
@@ -310,20 +382,357 @@ def plot_stage_goals_chart(
 
     return fig
 
+def plot_goal_timing_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Interactive goal-timing distribution chart."""
+
+    time_order = [
+        "0-15",
+        "16-30",
+        "31-45",
+        "46-60",
+        "61-75",
+        "76-90",
+        "90+",
+    ]
+
+    chart_data = data.copy()
+    chart_data["time_window"] = pd.Categorical(
+        chart_data["time_window"],
+        categories=time_order,
+        ordered=True,
+    )
+    chart_data = chart_data.sort_values("time_window")
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["time_window"],
+            y=chart_data["goals"],
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
+            text=chart_data["goals"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            hovertemplate=(
+                "<b>%{x} minutes</b><br>"
+                "Goals: <b>%{y}</b><extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Minutes Range",
+        showgrid=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
+
+    )
+
+    fig.update_yaxes(
+        title="Goals Scored",
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
+        range=[0, chart_data["goals"].max() * 1.20],
+    )
+
+    return fig
+
+def plot_match_result_distribution_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Interactive match-result distribution donut chart."""
+
+    total_matches = data["matches"].sum()
+
+    fig = px.pie(
+        data,
+        names="result_type",
+        values="matches",
+        hole=0.65,
+        color_discrete_sequence=[PRIMARY, ACCENT, "#2E7D32", "#C62828"],
+    )
+
+    fig.update_traces(
+        textposition="outside",
+        textinfo="percent",
+        textfont=dict(color=TEXT_PRIMARY, size=11),
+        hovertemplate=(
+            "<b>%{label}</b><br>"
+            "Matches: <b>%{value}</b><br>"
+            "Share: %{percent}<extra></extra>"
+        ),
+    )
+
+    fig.add_annotation(
+        text=(
+            f"<b>{total_matches}</b>"
+            "<br><span style='font-size:12px'>Matches</span>"
+        ),
+        x=0.5,
+        y=0.5,
+        showarrow=False,
+        font=dict(color=TEXT_PRIMARY),
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=True,
+    )
+
+
+
+    fig.update_layout(
+        margin=dict(t=1, b=10),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.25,
+            xanchor="center",
+            x=0.5,
+            font=dict(color=TEXT_SECONDARY, size=11),
+        ),
+    )
+
+    return fig
+
+def plot_goals_by_team_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Interactive goals-by-team chart for the teams overview."""
+
+    chart_data = data.sort_values("goals", ascending=False)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["team"],
+            y=chart_data["goals"],
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
+            text=chart_data["goals"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[
+                ["matches_played", "goals_per_match", "shots", "shots_on_target"]
+            ],
+            hovertemplate=(
+                "<b>%{x}</b><br>"
+                "Goals: <b>%{y}</b><br>"
+                "Matches played: %{customdata[0]}<br>"
+                "Goals per match: %{customdata[1]}<br>"
+                "Shots: %{customdata[2]}<br>"
+                "Shots on target: %{customdata[3]}"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Team",
+        showgrid=False,
+        showline=False,
+        tickmode="array",
+        tickvals=chart_data["team"].tolist(),
+        ticktext=[_wrap_axis_label(team) for team in chart_data["team"]],
+        automargin=True,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+
+    fig.update_yaxes(
+        title="Goals scored",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        range=[0, chart_data["goals"].max() * 1.20],
+    )
+
+    return fig
+
+def plot_best_defense_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Interactive best-defense (clean sheets) chart for the teams overview."""
+
+    chart_data = data.sort_values("clean_sheets", ascending=False)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["team"],
+            y=chart_data["clean_sheets"],
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
+            text=chart_data["clean_sheets"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[
+                ["goals_against", "matches_played", "goals_conceded_per_match"]
+            ],
+            hovertemplate=(
+                "<b>%{x}</b><br>"
+                "Clean sheets: <b>%{y}</b><br>"
+                "Goals against: %{customdata[0]}<br>"
+                "Matches played: %{customdata[1]}<br>"
+                "Goals conceded per match: %{customdata[2]:.2f}"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Team",
+        showgrid=False,
+        showline=False,
+        tickmode="array",
+        tickvals=chart_data["team"].tolist(),
+        ticktext=[_wrap_axis_label(team) for team in chart_data["team"]],
+        automargin=True,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+
+    fig.update_yaxes(
+        title="Clean sheets",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        range=[0, chart_data["clean_sheets"].max() * 1.20],
+    )
+
+    return fig
+
+def plot_man_of_the_match_teams(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Interactive performance (MOTM Awards) chart for the teams overview."""
+
+    chart_data = data.sort_values("man_of_the_match_awards", ascending=False)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["team"],
+            y=chart_data["man_of_the_match_awards"],
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
+            text=chart_data["man_of_the_match_awards"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[
+                ["winning_players"]
+            ],
+            hovertemplate=(
+                "<b>%{x}</b><br>"
+                "Man of the Match awards: <b>%{y}</b><br>"
+                "Award-winning players: %{customdata[0]}<br>"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Team",
+        showgrid=False,
+        showline=False,
+        tickmode="array",
+        tickvals=chart_data["team"].tolist(),
+        ticktext=[_wrap_axis_label(team) for team in chart_data["team"]],
+        automargin=True,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+
+    fig.update_yaxes(
+        title="MOTM Awards",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        range=[0, chart_data["man_of_the_match_awards"].max() * 1.20],
+    )
+
+    return fig
+
 def plot_goal_contributions_chart(
     data: pd.DataFrame,
     *,
-    height: int = 200,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
 ) -> go.Figure:
     """
     Stacked horizontal bar chart showing the Top 5 players
     by total goal contributions (Goals + Assists).
     """
 
-    # ------------------------------------------
+    
     # Prepare Data
-    # ------------------------------------------
-
     chart_data = (
         data.head(5)
         .sort_values("goal_contributions", ascending=True)
@@ -335,10 +744,7 @@ def plot_goal_contributions_chart(
         .apply(_wrap_axis_label)
     )
 
-    # ------------------------------------------
     # Build Figure
-    # ------------------------------------------
-
     fig = go.Figure()
 
     # Goals
@@ -398,10 +804,7 @@ def plot_goal_contributions_chart(
         )
     )
 
-    # ------------------------------------------
     # Layout
-    # ------------------------------------------
-
     _style_dashboard_chart(
         fig,
         height=height,
@@ -438,14 +841,81 @@ def plot_goal_contributions_chart(
 
     return fig
 
+def plot_man_of_the_match_players(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Horizontal bar chart showing the top 5 MOMT Awards winners."""
+
+    chart_data = (
+        data.head(5)
+        .sort_values("man_of_the_match_awards", ascending=True)
+        .copy()
+    )
+
+    chart_data["player"] = chart_data["player_name"].apply(_wrap_axis_label)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["man_of_the_match_awards"],
+            y=chart_data["player"],
+            orientation="h",
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
+            text=chart_data["man_of_the_match_awards"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[
+                ["player"]
+            ],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Team: %{customdata[0]}<br>"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="MOTM Awards",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
+    )
+
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
+    )
+
+    return fig
+
 def plot_goalkeeper_saves_chart(
     data: pd.DataFrame,
-    *,
-    height: int = 200,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
 ) -> go.Figure:
-    """
-    Horizontal bar chart showing the Top 5 goalkeepers by saves.
-    """
+    """Horizontal bar chart showing the top 5 goalkeepers by saves."""
 
     chart_data = (
         data.head(5)
@@ -453,40 +923,34 @@ def plot_goalkeeper_saves_chart(
         .copy()
     )
 
-    chart_data["player"] = (
-        chart_data["player_name"]
-        .apply(_wrap_axis_label)
-    )
+    chart_data["player"] = chart_data["player_name"].apply(_wrap_axis_label)
 
-    fig = go.Figure()
-
-    fig.add_trace(
+    fig = go.Figure(
         go.Bar(
             x=chart_data["saves"],
             y=chart_data["player"],
             orientation="h",
-            marker=dict(color=PRIMARY),
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
             text=chart_data["saves"],
             texttemplate="<b>%{text}</b>",
             textposition="outside",
-            cliponaxis=False,
+            textfont=dict(color=TEXT_PRIMARY, size=12),
             customdata=chart_data[
-                [
-                    "team",
-                    "clean_sheets",
-                    "goals_conceded",
-                    "matches_played",
-                ]
+                ["team", "clean_sheets", "goals_conceded", "matches_played"]
             ],
             hovertemplate=(
                 "<b>%{y}</b><br>"
                 "Team: %{customdata[0]}<br>"
                 "Saves: <b>%{x}</b><br>"
-                "Clean Sheets: %{customdata[1]}<br>"
-                "Goals Conceded: %{customdata[2]}<br>"
-                "Matches: %{customdata[3]}"
+                "Clean sheets: %{customdata[1]}<br>"
+                "Goals conceded: %{customdata[2]}<br>"
+                "Matches played: %{customdata[3]}"
                 "<extra></extra>"
             ),
+            cliponaxis=False,
         )
     )
 
@@ -498,350 +962,25 @@ def plot_goalkeeper_saves_chart(
 
     fig.update_xaxes(
         title="Saves",
-        showgrid=True,
-        gridcolor=GRID,
-        zeroline=False,
-    )
-
-    fig.update_yaxes(
-        showgrid=False,
-    )
-
-    return fig
-
-def plot_goals_by_team_chart(df):
-
-    fig = px.bar(
-        df,
-        x="team",
-        y="goals",
-        text="goals",
-        hover_data={
-            "matches_played": True,
-            "goals_per_match": True,
-            "shots": True,
-            "shots_on_target": True,
-        },
-    )
-
-    fig.update_traces(
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{x}</b><br>"
-            "Goals: %{y}<br>"
-            "Matches: %{customdata[0]}<br>"
-            "Goals per Match: %{customdata[1]}<br>"
-            "Shots: %{customdata[2]}<br>"
-            "Shots on Target: %{customdata[3]}"
-            "<extra></extra>"
-        ),
-    )
-
-    fig.update_xaxes(
-        ticktext=[_wrap_axis_label(x) for x in df["team"]],
-        tickvals=df["team"],
-    )
-
-    fig.update_layout(
-        xaxis_title=None,
-        yaxis_title="Goals Scored",
-        uniformtext_minsize=10,
-        uniformtext_mode="hide",
-    )
-    
-    return _style_dashboard_chart(fig, height=260)
-
-def plot_best_defense_chart(df):
-
-    # Highest clean sheets first
-    df=df.sort_values("clean_sheets", ascending=False)
-
-    fig = px.bar(
-        df,
-        x="team",
-        y="clean_sheets",
-        text="clean_sheets",
-        hover_data={
-            "goals_against": True,
-            "matches_played": True,
-            "goals_conceded_per_match": True,
-        },
-    )
-
-    fig.update_traces(
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Clean Sheets: %{y}<br>"
-            "Goals Against: %{customdata[0]}<br>"
-            "Matches: %{customdata[1]}<br>"
-            "Goals/Match: %{customdata[2]:.2f}"
-            "<extra></extra>"
-        ),
-    )
-
-    fig.update_xaxes(
-        ticktext=[_wrap_axis_label(x) for x in df["team"]],
-        tickvals=df["team"],
-    )
-
-    fig.update_yaxes(
-        range=[0, df["clean_sheets"].max() * 1.20]
-    )
-
-    fig.update_layout(
-        xaxis_title=None,
-        yaxis_title="Clean Sheets",
-        uniformtext_minsize=10,
-        uniformtext_mode="hide",
-    )
-
-    return _style_dashboard_chart(fig, height=260)
-
-
-def plot_goal_timing_chart(df):
-    fig = px.bar(
-        df,
-        x="time_window",
-        y="goals",
-        text="goals",
-        category_orders={
-            "time_window": [
-                "0-15",
-                "16-30",
-                "31-45",
-                "46-60",
-                "61-75",
-                "76-90",
-                "90+",
-            ]
-        },
-    )
-
-    fig.update_traces(
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{x} minutes</b><br>"
-            "Goals: %{y}<extra></extra>"
-        ),
-    )
-
-    fig.update_xaxes(
-        showgrid=False,
-    )
-
-    fig.update_yaxes(
-        title_text="Goals Scored",
-        showgrid=True,
-    )
-
-    return _style_dashboard_chart(fig, height=260)
-
-
-def plot_match_result_distribution_chart(df):
-    total_matches = df["matches"].sum()
-
-    fig = px.pie(
-        df,
-        names="result_type",
-        values="matches",
-        hole=0.55,
-    )
-
-    fig.update_traces(
-        textposition="outside",
-        textinfo="percent",
-        hovertemplate=(
-            "<b>%{label}</b><br>"
-            "Matches: %{value}<br>"
-            "Share: %{percent}"
-            "<extra></extra>"
-        ),
-    )
-
-    fig.add_annotation(
-        text=(
-            f"<b>{total_matches}</b>"
-            "<br><span style='font-size:12px'>Matches</span>"
-        ),
-        x=0.5,
-        y=0.5,
-        showarrow=False,
-    )
-
-    fig.update_layout(
-        height=420,
-        showlegend=True,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=-0.15,
-            xanchor="center",
-            x=0.5,
-        ),
-    )
-
-    return _style_dashboard_chart(fig, height=260)
-
-def plot_club_goal_contributions_chart(
-    data: pd.DataFrame,
-    *,
-    height: int = 260,
-) -> go.Figure:
-    """
-    Horizontal bar chart showing the top clubs by
-    total goal contributions.
-    """
-
-    chart_data = (
-        data.head(10)
-        .sort_values("goal_contributions", ascending=True)
-        .copy()
-    )
-
-    chart_data["club"] = (
-        chart_data["club_team"]
-        .apply(_wrap_axis_label)
-    )
-
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Bar(
-            x=chart_data["goal_contributions"],
-            y=chart_data["club"],
-            orientation="h",
-            marker=dict(color=PRIMARY),
-            text=chart_data["goal_contributions"],
-            texttemplate="<b>%{text}</b>",
-            textposition="outside",
-            cliponaxis=False,
-            customdata=chart_data[
-                [
-                    "goals",
-                    "assists",
-                    "players_sent",
-                ]
-            ],
-            hovertemplate=(
-                "<b>%{y}</b><br>"
-                "Goal Contributions: <b>%{x}</b><br>"
-                "Goals: %{customdata[0]}<br>"
-                "Assists: %{customdata[1]}<br>"
-                "Players Sent: %{customdata[2]}"
-                "<extra></extra>"
-            ),
-        )
-    )
-
-    _style_dashboard_chart(
-        fig,
-        height=height,
-        show_legend=False,
-    )
-
-    fig.update_xaxes(
-        title="Goal Contributions",
+        title_standoff=10,
         showgrid=True,
         gridcolor=GRID,
         zeroline=False,
         showline=False,
-        tickfont=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
-        title_font=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
     )
 
     fig.update_yaxes(
+        title=None,
         showgrid=False,
-        tickfont=dict(
-            color=TEXT_PRIMARY,
-            size=11,
-        ),
-    )
-
-    return fig
-
-def plot_club_minutes_played_chart(
-    data: pd.DataFrame,
-    *,
-    height: int = 260,
-) -> go.Figure:
-    """
-    Horizontal bar chart showing clubs by total minutes played.
-    """
-
-    chart_data = (
-        data.head(10)
-        .sort_values("total_minutes_played", ascending=True)
-        .copy()
-    )
-
-    chart_data["club"] = (
-        chart_data["club_team"]
-        .apply(_wrap_axis_label)
-    )
-
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Bar(
-            x=chart_data["total_minutes_played"],
-            y=chart_data["club"],
-            orientation="h",
-            marker=dict(color=ACCENT),
-            text=chart_data["total_minutes_played"],
-            texttemplate="<b>%{text}</b>",
-            textposition="outside",
-            cliponaxis=False,
-            customdata=chart_data[
-                [
-                    "players_sent",
-                    "avg_minutes_per_player",
-                ]
-            ],
-            hovertemplate=(
-                "<b>%{y}</b><br>"
-                "Total Minutes: <b>%{x:,.0f}</b><br>"
-                "Players Sent: %{customdata[0]}<br>"
-                "Average Minutes / Player: %{customdata[1]:,.2f}"
-                "<extra></extra>"
-            ),
-        )
-    )
-
-    _style_dashboard_chart(
-        fig,
-        height=height,
-        show_legend=False,
-    )
-
-    fig.update_xaxes(
-        title="Minutes Played",
-        showgrid=True,
-        gridcolor=GRID,
         zeroline=False,
         showline=False,
-        tickfont=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
-        title_font=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
-    )
-
-    fig.update_yaxes(
-        showgrid=False,
-        tickfont=dict(
-            color=TEXT_PRIMARY,
-            size=11,
-        ),
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
     )
 
     return fig
@@ -849,7 +988,7 @@ def plot_club_minutes_played_chart(
 def plot_club_representation_chart(
     data: pd.DataFrame,
     *,
-    height: int = 260,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
 ) -> go.Figure:
     """
     Horizontal bar chart showing clubs with the most
@@ -857,7 +996,7 @@ def plot_club_representation_chart(
     """
 
     chart_data = (
-        data.head(10)
+        data.head(5)
         .sort_values("players_sent", ascending=True)
         .copy()
     )
@@ -920,6 +1059,158 @@ def plot_club_representation_chart(
     )
 
     return fig
+
+def plot_club_minutes_played_chart(
+    data: pd.DataFrame,
+    *,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """
+    Horizontal bar chart showing clubs by total minutes played.
+    """
+
+    chart_data = (
+        data.head(5)
+        .sort_values("total_minutes_played", ascending=True)
+        .copy()
+    )
+
+    chart_data["club"] = (
+        chart_data["club_team"]
+        .apply(_wrap_axis_label)
+    )
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=chart_data["total_minutes_played"],
+            y=chart_data["club"],
+            orientation="h",
+            marker=dict(color=PRIMARY),
+            text=chart_data["total_minutes_played"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            cliponaxis=False,
+            customdata=chart_data[
+                [
+                    "players_sent",
+                    "avg_minutes_per_player",
+                ]
+            ],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Total Minutes: <b>%{x:,.0f}</b><br>"
+                "Players Sent: %{customdata[0]}<br>"
+                "Average Minutes / Player: %{customdata[1]:,.2f}"
+                "<extra></extra>"
+            ),
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Minutes Played",
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        tickfont=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+        title_font=dict(
+            color=TEXT_SECONDARY,
+            size=11,
+        ),
+    )
+
+    fig.update_yaxes(
+        showgrid=False,
+        tickfont=dict(
+            color=TEXT_PRIMARY,
+            size=11,
+        ),
+    )
+
+    return fig
+
+def plot_club_goal_contributions_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Horizontal bar chart showing the top clubs by total goal contributions."""
+
+    chart_data = (
+        data.head(5)
+        .sort_values("goal_contributions", ascending=True)
+        .copy()
+    )
+
+    chart_data["club"] = chart_data["club_team"].apply(_wrap_axis_label)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["goal_contributions"],
+            y=chart_data["club"],
+            orientation="h",
+            marker=dict(
+                color=PRIMARY,
+                line=dict(width=0),
+            ),
+            text=chart_data["goal_contributions"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[["goals", "assists", "players_sent"]],
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Goal contributions: <b>%{x}</b><br>"
+                "Goals: %{customdata[0]}<br>"
+                "Assists: %{customdata[1]}<br>"
+                "Players sent: %{customdata[2]}"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(
+        fig,
+        height=height,
+        show_legend=False,
+    )
+
+    fig.update_xaxes(
+        title="Goal contributions",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
+    )
+
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
+    )
+
+    return fig
+
 
 def plot_club_value_chart(
     data: pd.DataFrame,
@@ -1312,35 +1603,3 @@ def plot_referee_stage_workload_chart(df):
     )
 
     return _style_dashboard_chart(fig, height=300)
-
-def plot_event_counts_chart(data, height=210):
-    chart_data = data.sort_values("avg_events_per_match", ascending=True)
-
-    fig = px.bar(
-        chart_data,
-        x="avg_events_per_match",
-        y="event_type",
-        orientation="h",
-        custom_data=["total_events"],
-    )
-
-    fig.update_traces(
-        hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Average per match: %{x:.2f}<br>"
-            "Total events: %{customdata[0]}<extra></extra>"
-        )
-    )
-
-    fig.update_xaxes(
-        title="Average events per match",
-    )
-
-    fig.update_yaxes(
-        title=None,
-    )
-
-    return _style_dashboard_chart(
-        fig,
-        height=height,
-    )

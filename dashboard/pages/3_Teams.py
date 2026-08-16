@@ -1,6 +1,7 @@
 from dashboard.components.charts import (
     plot_goals_by_team_chart,
     plot_best_defense_chart,
+    plot_man_of_the_match_teams
 )
 from dashboard.components.podium import podium_card
 from dashboard.layout import (
@@ -36,54 +37,57 @@ with section("Finalists"):
         podium_card("Third place", summary["third_place"], medal="bronze")
 
 
-left, right = two_columns()
+    left, middle, right = three_columns()
 
-with left:
+    with left:
+        with st.container(border=True):
+            st.caption("Goals by Team")
+            st.plotly_chart(
+                plot_goals_by_team_chart(
+                    charts["goals_by_team"]
+                ),
+                width="stretch",
+            )
 
-    with st.container(border=True):
+    with middle:
+        with st.container(border=True):
+            st.caption("Best Defensive Teams")
+            st.plotly_chart(
+                plot_best_defense_chart(
+                    charts["best_defense"]
+                ),
+                width="stretch",
+            )
 
-        st.caption("Goals by Team")
+    with right:
+        with st.container(border=True):
+            st.caption("Most MOTM Awards")
+            st.plotly_chart(
+                plot_man_of_the_match_teams(
+                    charts["man_of_the_match_teams"]
+                ),
+                width="stretch",
+            )
+    
 
-        st.plotly_chart(
-            plot_goals_by_team_chart(
-                charts["goals_by_team"]
-            ),
-            width="stretch",
-        )
+    left, right = two_columns()
 
-with right:
+    with left:
+        with st.container(border=True):
+            st.caption("Attacking Statistics")
+            st.dataframe(
+                tables["attacking"],
+                hide_index=True,
+                width="stretch",
+                height=180,
+            )
 
-    with st.container(border=True):
-
-        st.caption("Best Defensive Teams")
-
-        st.plotly_chart(
-            plot_best_defense_chart(
-                charts["best_defense"]
-            ),
-            width="stretch",
-        )
-
-left, right = two_columns()
-
-with left:
-    with st.container(border=True):
-        st.caption("Attacking Statistics")
-
-        st.dataframe(
-            tables["attacking"],
-            hide_index=True,
-            width="stretch",
-            height=260,
-        )
-
-with right:
-    with st.container(border=True):
-        st.caption("Team Discipline")
-
-        st.dataframe(
-            tables["discipline"],
-            hide_index=True,
-            width="stretch",
-            height=260,
-        )
+    with right:
+        with st.container(border=True):
+            st.caption("Team Discipline")
+            st.dataframe(
+                tables["discipline"],
+                hide_index=True,
+                width="stretch",
+                height=180,
+            )

@@ -10,7 +10,7 @@ from dashboard.layout import (
     two_columns,
 )
 from dashboard.theme.css import load_css
-from dashboard.theme.icons import GOAL, PLAYER
+from dashboard.theme.icons import TARGET, STAR, SHIELD
 
 from dashboard.utils.dashboard_data import (
     get_player_summary,
@@ -56,7 +56,7 @@ if view == "Overview":
                 name=scorer["player_name"],
                 subtitle=scorer["team"],
                 value=f'{scorer["goals"]} Goals',
-                icon=GOAL,
+                icon=TARGET,
             )
 
         with col2:
@@ -66,7 +66,7 @@ if view == "Overview":
                 name=man_of_the_match_awards["player_name"],
                 subtitle=man_of_the_match_awards["team"],
                 value=f'{man_of_the_match_awards["man_of_the_match_awards"]} MOTM Awards',
-                icon=PLAYER,
+                icon=STAR,
             )
 
         with col3:
@@ -75,8 +75,8 @@ if view == "Overview":
                 title="Best Goalkeeper",
                 name=goalkeeper["player_name"],
                 subtitle=goalkeeper["team"],
-                value=f'{goalkeeper["clean_sheets"]} Clean Sheets',
-                icon=PLAYER,
+                value=f'{int(goalkeeper["clean_sheets"])} Clean Sheets',
+                icon=SHIELD,
             )
 
 
@@ -118,7 +118,14 @@ if view == "Overview":
             with st.container(border=True):
                 st.caption("Top Scorers")
                 st.dataframe(
-                    scoring["top_scorers"],
+                    scoring["top_scorers"].rename(columns={
+                        "player_name": "Player",
+                        "team": "Team",
+                        "goals": "Goals",
+                        "assits": "Assists",
+                        "matches_played": "Matches",
+                        "minutes_played": "Minutes",
+                    }),
                     hide_index=True,
                     width="stretch",
                     height=180,
@@ -128,7 +135,14 @@ if view == "Overview":
             with st.container(border=True):
                 st.caption("Top Assists")
                 st.dataframe(
-                    scoring["top_assists"],
+                    scoring["top_assists"].rename(columns={
+                        "player_name": "Player",
+                        "team": "Team",
+                        "goals": "Goals",
+                        "assits": "Assists",
+                        "matches_played": "Matches",
+                        "minutes_played": "Minutes",
+                    }),
                     hide_index=True,
                     width="stretch",
                     height=180,
@@ -140,9 +154,15 @@ else:
 
         with left:
             with st.container(border=True):
-                st.caption("Hat Tricks")
+                st.caption(" Players Who Scored Hat-Tricks")
                 st.dataframe(
-                    achievements["hat_tricks"],
+                    achievements["hat_tricks"].rename(columns={
+                        "player_name": "Player",
+                        "team": "Team",
+                        "match": "Scoreline",
+                        "stage": "Stage",
+                        "goals": "Goals",
+                    }),
                     hide_index=True,
                     width="stretch",
                     height=180,
@@ -152,16 +172,27 @@ else:
             with st.container(border=True):
                 st.caption("Players with the most Man of the Match awards")
                 st.dataframe(
-                    achievements["man_of_the_match"],
+                    achievements["man_of_the_match"].rename(columns={
+                        "player_name": "Player",
+                        "team": "Team",
+                        "man_of_the_match_awards": "MOTM Awards",
+                    }),
                     hide_index=True,
                     width="stretch",
                     height=180,
                 )
 
         with st.container(border=True):
-            st.caption("Total Cards")
+            st.caption("Players Discipline")
             st.dataframe(
-                discipline["yellow_cards"],
+                discipline["yellow_cards"].rename(columns={
+                        "player_name": "Player",
+                        "team": "Team",
+                        "yellow_cards": "Yellow Cards",
+                        "red_cards": "Red Cards",
+                        "matches_played": "Matches",
+                        "minutes_played": "Minutes",
+                    }),
                 hide_index=True,
                 width="stretch",
                 height=280,

@@ -1,6 +1,6 @@
 from dashboard.components.metrics import metric_card
 from dashboard.components.podium import podium_card
-from dashboard.theme.icons import GOAL, MATCH, PLAYER, WORLD
+from dashboard.theme.icons import GOAL, MATCH, WORLD
 from dashboard.theme.css import load_css
 from dashboard.layout import section, kpi_grid, two_columns, three_columns, chart_row
 from dashboard.utils.dashboard_data import (
@@ -24,18 +24,18 @@ awards = get_tournament_awards()
 events = get_tournament_event_counts()
 
 with section("Finalists"):
-    champion_col, runner_up_col, third_place_col = three_columns()
+    col1, col2, col3 = three_columns()
 
-    with champion_col:
+    with col1:
         podium_card("Champion", summary["winner"], medal="gold")
-    with runner_up_col:
+    with col2:
         podium_card("Runner-up", summary["runner_up"], medal="silver")
-    with third_place_col:
+    with col3:
         podium_card("Third place", summary["third_place"], medal="bronze")
 
-    event_col, awards_col = two_columns(ratio=(3, 2))
+    col1, col2 = two_columns(ratio=(3, 2))
 
-    with event_col:
+    with col1:
         with st.container(border=True):
             st.caption("Match events")
 
@@ -47,7 +47,7 @@ with section("Finalists"):
                 width="stretch",
             )
 
-    with awards_col:
+    with col2:
         with st.container(border=True):
             st.caption("Tournament awards")
 
@@ -65,7 +65,12 @@ with section("Finalists"):
     with st.container (border=True):
         st.caption("Tournament standings")
         st.dataframe(
-            standings.drop(columns="finish_rank"),
+            standings.drop(columns="finish_rank").rename(columns={
+                "team": "Country",
+                "confederation": "Confederation",
+                "stage_reached": "Stage Reached",
+                "tournament_finish": "Tournament Finish",
+            }),
             hide_index=True,
             height=180,
             width="stretch",

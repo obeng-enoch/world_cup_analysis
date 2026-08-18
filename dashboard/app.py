@@ -3,7 +3,7 @@ from pathlib import Path
 import streamlit as st
 
 from dashboard.components.metrics import metric_card
-from dashboard.theme.icons import GOAL, MATCH, PLAYER, WORLD
+from dashboard.theme.icons import GOAL, MATCH, USERS, WORLD
 from dashboard.utils.dashboard_data import get_homepage_metrics
 from dashboard.theme.css import load_css
 
@@ -39,8 +39,6 @@ Python, SQLite, SQL, Pandas, Streamlit, and Plotly.
     """
 )
 
-st.divider()
-
 # Dashboard Data
 metrics = get_homepage_metrics()
 
@@ -53,15 +51,13 @@ with col1:
     metric_card("Total Teams", metrics["teams"], icon=WORLD)
 
 with col2:
-    metric_card("Total Players", f"{metrics['players']:,}", icon=PLAYER)
+    metric_card("Total Players", f"{metrics['players']:,}", icon=USERS)
 
 with col3:
     metric_card("Total Matches", metrics["matches"], icon=MATCH)
 
 with col4:
     metric_card("Total Goals", metrics["goals"], icon=GOAL)
-st.divider()
-
 
 # Explore
 st.subheader("Explore")
@@ -71,11 +67,12 @@ st.markdown(
 Use the **sidebar** to explore:
 
 - Tournament Overview
-- Players
-- Teams
 - Matches
-- Venues
+- Teams
+- Players
+- Clubs
 - Referees
+- Venues
 """
 )
 

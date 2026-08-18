@@ -9,7 +9,7 @@ def get_average_stats():
 def get_defense():
     return get_dataframe("teams/defense.sql")
 
-def get_discipline():
+def get_discipline_teams():
     return get_dataframe("teams/discipline.sql")
 
 def get_highest_scoring_teams():

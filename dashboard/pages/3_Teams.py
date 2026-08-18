@@ -27,19 +27,19 @@ charts = get_team_charts()
 tables = get_team_tables()
 
 with section("Finalists"):
-    champion_col, runner_up_col, third_place_col = three_columns()
+    col1, col2, col3 = three_columns()
 
-    with champion_col:
+    with col1:
         podium_card("Champion", summary["winner"], medal="gold")
-    with runner_up_col:
+    with col2:
         podium_card("Runner-up", summary["runner_up"], medal="silver")
-    with third_place_col:
+    with col3:
         podium_card("Third place", summary["third_place"], medal="bronze")
 
 
-    left, middle, right = three_columns()
+    col1, col2, col3 = three_columns()
 
-    with left:
+    with col1:
         with st.container(border=True):
             st.caption("Goals by Team")
             st.plotly_chart(
@@ -49,7 +49,7 @@ with section("Finalists"):
                 width="stretch",
             )
 
-    with middle:
+    with col2:
         with st.container(border=True):
             st.caption("Best Defensive Teams")
             st.plotly_chart(
@@ -59,7 +59,7 @@ with section("Finalists"):
                 width="stretch",
             )
 
-    with right:
+    with col3:
         with st.container(border=True):
             st.caption("Most MOTM Awards")
             st.plotly_chart(
@@ -70,23 +70,36 @@ with section("Finalists"):
             )
     
 
-    left, right = two_columns()
+    col1, col2 = two_columns()
 
-    with left:
+    with col1:
         with st.container(border=True):
             st.caption("Attacking Statistics")
             st.dataframe(
-                tables["attacking"],
+                tables["attacking"].rename(columns={
+                    "team": "Country",
+                    "matches_played": "Matches Played",
+                    "total_shots": "Total Shots",
+                    "shots_on_target": "Shots on Target",
+                    "shots_per_match": "Shots Per Match",
+                    "shots_on_target_per_match": "Shots on Target/Match"
+                }),
                 hide_index=True,
                 width="stretch",
                 height=180,
             )
 
-    with right:
+    with col2:
         with st.container(border=True):
             st.caption("Team Discipline")
             st.dataframe(
-                tables["discipline"],
+                tables["discipline_teams"].rename(columns={
+                    "team": "Country",
+                    "total_yellow_cards": "Yellow Cards",
+                    "total_red_cards": "Red Cards",
+                    "matches_played": "Matches Played",
+                    "cards_per_match": "Cards Per Match"
+                }),
                 hide_index=True,
                 width="stretch",
                 height=180,

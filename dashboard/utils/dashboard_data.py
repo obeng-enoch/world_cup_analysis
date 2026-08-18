@@ -31,7 +31,7 @@ from src.analytics.players import (
 from src.analytics.teams import (
     get_aggresive_attacking,
     get_defense,
-    get_discipline,
+    get_discipline_teams,
     get_highest_scoring_teams,
     get_tournament_finish,
 )
@@ -225,7 +225,7 @@ def get_team_tables():
 
     return {
         "attacking": get_aggresive_attacking(),
-        "discipline": get_discipline(),
+        "discipline_teams": get_discipline_teams(),
     }
 
 def get_match_summary():

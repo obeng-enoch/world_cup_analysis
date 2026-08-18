@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 import pandas as pd
+import re
 from dashboard.theme.constants import (
     CHART_HEIGHT_THREE_COLUMN,
     CHART_HEIGHT_TWO_COLUMN,
@@ -21,6 +22,7 @@ from dashboard.theme.colors import (
 DEFAULT_HEIGHT = CHART_HEIGHT_THREE_COLUMN
 
 DEFAULT_TEMPLATE = "plotly_white"
+
 def _wrap_axis_label(label: str, max_words_per_line: int = 2) -> str:
     """
     Wrap long axis labels onto multiple lines.
@@ -40,6 +42,13 @@ def _wrap_axis_label(label: str, max_words_per_line: int = 2) -> str:
         lines.append(" ".join(words[i:i + max_words_per_line]))
 
     return "<br>".join(lines)
+
+def _short_stadium_name(name: str) -> str:
+    """Extract the parenthetical stadium name for compact display
+    (e.g. 'Monterrey Stadium (Estadio BBVA)' -> 'Estadio BBVA'),
+    falling back to the full name if there's no parenthetical."""
+    match = re.search(r"\(([^)]+)\)", name)
+    return match.group(1) if match else name
 
 def _style_chart(
     fig: go.Figure,
@@ -278,10 +287,7 @@ def plot_event_counts_chart(
             color=TEXT_SECONDARY,
             size=11,
         ),
-        title_font=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        )
+  
     )
 
     fig.update_yaxes(
@@ -362,7 +368,7 @@ def plot_stage_goals_chart(
         ],
         tickangle=0,
         automargin=True,
-        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        tickfont=dict(color=TEXT_SECONDARY, size=9),
     )
 
     fig.update_yaxes(
@@ -376,7 +382,6 @@ def plot_stage_goals_chart(
         nticks=5,
         tickformat=",",
         tickfont=dict(color=TEXT_SECONDARY, size=11),
-        title_font=dict(color=TEXT_SECONDARY, size=11),
         range=[0, data[value_column].max() * 1.20],
     )
 
@@ -438,7 +443,6 @@ def plot_goal_timing_chart(
         showline=False,
         automargin=True,
         tickfont=dict(color=TEXT_SECONDARY, size=11),
-        title_font=dict(color=TEXT_SECONDARY, size=11),
 
     )
 
@@ -452,7 +456,6 @@ def plot_goal_timing_chart(
         nticks=5,
         tickformat=",",
         tickfont=dict(color=TEXT_SECONDARY, size=11),
-        title_font=dict(color=TEXT_SECONDARY, size=11),
         range=[0, chart_data["goals"].max() * 1.20],
     )
 
@@ -825,17 +828,14 @@ def plot_goal_contributions_chart(
             color=TEXT_SECONDARY,
             size=11,
         ),
-        title_font=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
+   
     )
 
     fig.update_yaxes(
         showgrid=False,
         tickfont=dict(
             color=TEXT_PRIMARY,
-            size=11,
+            size=10,
         ),
     )
 
@@ -897,7 +897,6 @@ def plot_man_of_the_match_players(
         nticks=5,
         tickformat=",",
         tickfont=dict(color=TEXT_SECONDARY, size=11),
-        title_font=dict(color=TEXT_SECONDARY, size=11),
     )
 
     fig.update_yaxes(
@@ -971,7 +970,6 @@ def plot_goalkeeper_saves_chart(
         nticks=5,
         tickformat=",",
         tickfont=dict(color=TEXT_SECONDARY, size=11),
-        title_font=dict(color=TEXT_SECONDARY, size=11),
     )
 
     fig.update_yaxes(
@@ -1041,10 +1039,6 @@ def plot_club_representation_chart(
         zeroline=False,
         showline=False,
         tickfont=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
-        title_font=dict(
             color=TEXT_SECONDARY,
             size=11,
         ),
@@ -1124,10 +1118,6 @@ def plot_club_minutes_played_chart(
             color=TEXT_SECONDARY,
             size=11,
         ),
-        title_font=dict(
-            color=TEXT_SECONDARY,
-            size=11,
-        ),
     )
 
     fig.update_yaxes(
@@ -1197,7 +1187,6 @@ def plot_club_goal_contributions_chart(
         nticks=5,
         tickformat=",",
         tickfont=dict(color=TEXT_SECONDARY, size=11),
-        title_font=dict(color=TEXT_SECONDARY, size=11),
     )
 
     fig.update_yaxes(
@@ -1296,310 +1285,376 @@ def plot_club_value_chart(
 
     return fig
 
-def plot_venue_goals_chart(df):
-    data = df.copy()
+def plot_venue_goals_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_TWO_COLUMN,
+) -> go.Figure:
+    """Horizontal bar chart showing venues by average goals per match."""
 
-    data["venue_label"] = data["stadium_name"].apply(
-        _wrap_axis_label
+    chart_data = data.sort_values("avg_goals_per_match", ascending=True).copy()
+    chart_data["venue_label"] = chart_data["stadium_name"].apply(
+        lambda name: _wrap_axis_label(_short_stadium_name(name))
     )
 
-    fig = px.bar(
-        data,
-        x="avg_goals_per_match",
-        y="venue_label",
-        orientation="h",
-        text="avg_goals_per_match",
-        custom_data=[
-            "stadium_name",
-            "matches_hosted",
-            "total_goals",
-        ],
-    )
-
-    fig.update_traces(
-        texttemplate="%{text:.2f}",
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>"
-            "Matches: %{customdata[1]}<br>"
-            "Total goals: %{customdata[2]}<br>"
-            "Avg goals/match: %{x:.2f}"
-            "<extra></extra>"
-        ),
-    )
-
-    fig.update_layout(
-        xaxis_title="Average Goals per Match",
-        yaxis_title=None,
-    )
-
-    return _style_dashboard_chart(fig, height=250)
-
-def plot_venue_match_day_style_chart(df):
-    data = df.copy()
-
-    data["venue_label"] = data["stadium_name"].apply(
-        _wrap_axis_label
-    )
-
-    fig = px.bar(
-        data,
-        x=[
-            "avg_corners",
-            "avg_fouls",
-            "avg_offsides",
-        ],
-        y="venue_label",
-        orientation="h",
-        barmode="group",
-        custom_data=["stadium_name"],
-    )
-
-    fig.update_traces(
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>"
-            "%{fullData.name}: %{x:.2f}"
-            "<extra></extra>"
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["avg_goals_per_match"],
+            y=chart_data["venue_label"],
+            orientation="h",
+            marker=dict(color=PRIMARY, line=dict(width=0)),
+            text=chart_data["avg_goals_per_match"],
+            texttemplate="<b>%{text:.2f}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[["stadium_name", "matches_hosted", "total_goals"]],
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Matches: %{customdata[1]}<br>"
+                "Total goals: %{customdata[2]}<br>"
+                "Avg goals/match: <b>%{x:.2f}</b>"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
         )
     )
 
-    fig.update_layout(
-        xaxis_title="Average per Match",
-        yaxis_title=None,
-        legend_title=None,
+    _style_dashboard_chart(fig, height=height, show_legend=False)
+
+    fig.update_xaxes(
+        title="Average goals per match",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
     )
 
-    return _style_dashboard_chart(fig, height=250)
+    return fig
 
-def plot_venue_elevation_effects_chart(df):
-    data = df.copy()
+def plot_venue_elevation_effects_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_TWO_COLUMN,
+) -> go.Figure:
+    """Vertical bar chart showing average goals per match by elevation band."""
+
+    chart_data = data.copy()
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["elevation_band"],
+            y=chart_data["avg_goals_per_match"],
+            marker=dict(color=PRIMARY, line=dict(width=0)),
+            text=chart_data["avg_goals_per_match"],
+            texttemplate="<b>%{text:.2f}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[["matches_played", "avg_combined_xg"]],
+            hovertemplate=(
+                "<b>%{x}</b><br>"
+                "Matches: %{customdata[0]}<br>"
+                "Avg goals/match: <b>%{y:.2f}</b><br>"
+                "Avg combined xG: %{customdata[1]:.2f}"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(fig, height=height, show_legend=False)
+
+    fig.update_xaxes(
+        title=None,
+        showgrid=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+    fig.update_yaxes(
+        title="Average goals per match",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        range=[0, chart_data["avg_goals_per_match"].max() * 1.20],
+    )
+
+    return fig
+
+def plot_referee_matches_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Horizontal bar chart of the top 8 referees by matches officiated."""
+
+    chart_data = (
+        data.sort_values("matches_officiated", ascending=False)
+        .head(5)
+        .sort_values("matches_officiated", ascending=True)
+        .copy()
+    )
+    chart_data["referee_label"] = chart_data["referee"].apply(_wrap_axis_label)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["matches_officiated"],
+            y=chart_data["referee_label"],
+            orientation="h",
+            marker=dict(color=PRIMARY, line=dict(width=0)),
+            text=chart_data["matches_officiated"],
+            texttemplate="<b>%{text}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[["referee", "country", "pre_tournament_avg_cards"]],
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Country: %{customdata[1]}<br>"
+                "Matches officiated: <b>%{x}</b><br>"
+                "Pre-tournament avg cards: %{customdata[2]:.1f}"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(fig, height=height, show_legend=False)
+
+    fig.update_xaxes(
+        title="Matches officiated",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
+    )
+
+    return fig
+
+def plot_referee_fouls_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Horizontal bar chart of referees by average fouls per match."""
+
+    eligible = data[data["matches_officiated"] >= 4]
+
+    chart_data = (
+        eligible.sort_values("avg_fouls_per_match", ascending=False)
+        .head(5)
+        .sort_values("avg_fouls_per_match", ascending = True)
+        .copy()
+    )
+    chart_data["referee_label"] = chart_data["referee"].apply(_wrap_axis_label)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["avg_fouls_per_match"],
+            y=chart_data["referee_label"],
+            orientation="h",
+            marker=dict(color=PRIMARY, line=dict(width=0)),
+            text=chart_data["avg_fouls_per_match"],
+            texttemplate="<b>%{text:.1f}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[["referee", "country", "matches_officiated"]],
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Country: %{customdata[1]}<br>"
+                "Matches officiated: %{customdata[2]}<br>"
+                "Avg fouls/match: <b>%{x:.1f}</b>"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(fig, height=height, show_legend=False)
+
+    fig.update_xaxes(
+        title="Average fouls per match",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
+    )
+
+    return fig
+
+def plot_referee_card_comparison_chart(
+    data: pd.DataFrame,
+    height: int = CHART_HEIGHT_THREE_COLUMN,
+) -> go.Figure:
+    """Horizontal bar of the top 5 referees by average cards per game,
+    limited to referees who officiated 4+ matches so the ranking
+    reflects a meaningful sample rather than a single-game outlier."""
+
+    eligible = data[data["matches_officiated"] >= 4]
+
+    chart_data = (
+        eligible.sort_values("actual_avg_cards_per_game", ascending=False)
+        .head(5)
+        .sort_values("actual_avg_cards_per_game", ascending=True)
+        .copy()
+    )
+    chart_data["referee_label"] = chart_data["referee"].apply(_wrap_axis_label)
+
+    fig = go.Figure(
+        go.Bar(
+            x=chart_data["actual_avg_cards_per_game"],
+            y=chart_data["referee_label"],
+            orientation="h",
+            marker=dict(color=PRIMARY, line=dict(width=0)),
+            text=chart_data["actual_avg_cards_per_game"],
+            texttemplate="<b>%{text:.1f}</b>",
+            textposition="outside",
+            textfont=dict(color=TEXT_PRIMARY, size=12),
+            customdata=chart_data[
+                ["referee", "country", "matches_officiated", "yellow_cards", "red_cards"]
+            ],
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Country: %{customdata[1]}<br>"
+                "Matches officiated: %{customdata[2]}<br>"
+                "Yellow cards: %{customdata[3]}<br>"
+                "Red cards: %{customdata[4]}<br>"
+                "Avg cards/match: <b>%{x:.1f}</b>"
+                "<extra></extra>"
+            ),
+            cliponaxis=False,
+        )
+    )
+
+    _style_dashboard_chart(fig, height=height, show_legend=False)
+
+    fig.update_xaxes(
+        title="Average cards per match",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+    )
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
+    )
+
+    return fig
+
+def plot_referee_stage_workload_chart(
+    data: pd.DataFrame,
+    height: int = 300,
+) -> go.Figure:
+    """Stacked bar of stage-by-stage workload for the 8 busiest
+    referees who officiated more than one match."""
+
+    totals = (
+        data.groupby("referee")["matches_officiated"]
+        .sum()
+        .reset_index(name="total_matches")
+    )
+    eligible = totals[totals["total_matches"] >= 2]
+    top_referees = eligible.sort_values("total_matches", ascending=False).head(8)["referee"]
+
+    chart_data = data[data["referee"].isin(top_referees)].copy()
+    order = (
+        chart_data.groupby("referee")["matches_officiated"]
+        .sum()
+        .sort_values(ascending=True)
+        .index
+    )
+    chart_data["referee_label"] = chart_data["referee"].apply(_wrap_axis_label)
+    label_order = [_wrap_axis_label(r) for r in order]
 
     fig = px.bar(
-        data,
-        x="elevation_band",
-        y="avg_goals_per_match",
-        text="avg_goals_per_match",
-        custom_data=[
-            "matches_played",
-            "avg_combined_xg",
-        ],
-    )
-
-    fig.update_traces(
-        texttemplate="%{text:.2f}",
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{x}</b><br>"
-            "Matches: %{customdata[0]}<br>"
-            "Avg goals/match: %{y:.2f}<br>"
-            "Avg combined xG: %{customdata[1]:.2f}"
-            "<extra></extra>"
-        ),
-    )
-
-    fig.update_layout(
-        xaxis_title="Elevation Band",
-        yaxis_title="Average Goals per Match",
-    )
-
-    return _style_dashboard_chart(fig, height=250)
-
-def plot_venue_stage_distribution_chart(df):
-    data = df.copy()
-
-    data["venue_label"] = data["stadium_name"].apply(
-        _wrap_axis_label
-    )
-
-    fig = px.bar(
-        data,
-        x="matches_hosted",
-        y="venue_label",
+        chart_data,
+        x="matches_officiated",
+        y="referee_label",
         color="stage",
         orientation="h",
         barmode="stack",
-        custom_data=[
-            "stadium_name",
-            "stage",
-        ],
+        category_orders={"referee_label": label_order},
+        custom_data=["referee", "stage"],
     )
 
     fig.update_traces(
         hovertemplate=(
             "<b>%{customdata[0]}</b><br>"
             "Stage: %{customdata[1]}<br>"
-            "Matches: %{x}"
-            "<extra></extra>"
-        )
-    )
-
-    fig.update_layout(
-        xaxis_title="Matches Hosted",
-        yaxis_title=None,
-        legend_title=None,
-    )
-
-    return _style_dashboard_chart(fig, height=250)
-
-def plot_referee_matches_chart(df):
-    data = df.copy()
-
-    data["referee_label"] = data["referee"].apply(
-        _wrap_axis_label
-    )
-
-    fig = px.bar(
-        data,
-        x="matches_officiated",
-        y="referee_label",
-        orientation="h",
-        text="matches_officiated",
-        custom_data=[
-            "referee",
-            "country",
-            "pre_tournament_avg_cards",
-        ],
-    )
-
-    fig.update_traces(
-        texttemplate="%{text}",
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>"
-            "Country: %{customdata[1]}<br>"
-            "Matches officiated: %{x}<br>"
-            "Pre-tournament avg cards: "
-            "%{customdata[2]:.1f}"
-            "<extra></extra>"
+            "Matches: <b>%{x}</b><extra></extra>"
         ),
+        marker_line_width=0,
     )
 
-    fig.update_layout(
-        xaxis_title="Matches Officiated",
-        yaxis_title=None,
+    _style_dashboard_chart(fig, height=height, show_legend=True)
+
+    fig.update_layout(legend_title=None)
+
+    fig.update_xaxes(
+        title="Matches officiated",
+        title_standoff=10,
+        showgrid=True,
+        gridcolor=GRID,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        nticks=5,
+        tickformat=",",
+        tickfont=dict(color=TEXT_SECONDARY, size=11),
+        title_font=dict(color=TEXT_SECONDARY, size=11),
+    )
+    fig.update_yaxes(
+        title=None,
+        showgrid=False,
+        zeroline=False,
+        showline=False,
+        automargin=True,
+        tickfont=dict(color=TEXT_PRIMARY, size=11),
     )
 
-    return _style_dashboard_chart(fig, height=250)
-
-def plot_referee_fouls_chart(df):
-    data = df.copy()
-
-    data["referee_label"] = data["referee"].apply(
-        _wrap_axis_label
-    )
-
-    fig = px.bar(
-        data,
-        x="avg_fouls_per_match",
-        y="referee_label",
-        orientation="h",
-        text="avg_fouls_per_match",
-        custom_data=[
-            "referee",
-            "country",
-            "matches_officiated",
-        ],
-    )
-
-    fig.update_traces(
-        texttemplate="%{text:.2f}",
-        textposition="outside",
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>"
-            "Country: %{customdata[1]}<br>"
-            "Matches officiated: %{customdata[2]}<br>"
-            "Avg fouls/match: %{x:.2f}"
-            "<extra></extra>"
-        ),
-    )
-
-    fig.update_layout(
-        xaxis_title="Average Fouls per Match",
-        yaxis_title=None,
-    )
-
-    return _style_dashboard_chart(fig, height=250)
-
-def plot_referee_card_comparison_chart(df):
-    data = df.copy()
-
-    data["referee_label"] = data["referee"].apply(
-        _wrap_axis_label
-    )
-
-    fig = px.bar(
-        data,
-        x=[
-            "actual_avg_cards_per_game",
-            "pre_tournament_avg_cards",
-        ],
-        y="referee_label",
-        orientation="h",
-        barmode="group",
-        custom_data=[
-            "referee",
-            "country",
-            "matches_officiated",
-            "yellow_cards",
-            "red_cards",
-            "cards_delta",
-        ],
-    )
-
-    fig.update_traces(
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>"
-            "Country: %{customdata[1]}<br>"
-            "Matches officiated: %{customdata[2]}<br>"
-            "Yellow cards: %{customdata[3]}<br>"
-            "Red cards: %{customdata[4]}<br>"
-            "%{fullData.name}: %{x:.2f}<br>"
-            "Difference: %{customdata[5]:+.2f}"
-            "<extra></extra>"
-        )
-    )
-
-    fig.update_layout(
-        xaxis_title="Average Cards per Match",
-        yaxis_title=None,
-        legend_title=None,
-    )
-
-    return _style_dashboard_chart(fig, height=280)
-
-def plot_referee_stage_workload_chart(df):
-    data = df.copy()
-
-    data["referee_label"] = data["referee"].apply(
-        _wrap_axis_label
-    )
-
-    fig = px.bar(
-        data,
-        x="matches_officiated",
-        y="referee_label",
-        color="stage",
-        orientation="h",
-        barmode="stack",
-        custom_data=[
-            "referee",
-            "stage",
-        ],
-    )
-
-    fig.update_traces(
-        hovertemplate=(
-            "<b>%{customdata[0]}</b><br>"
-            "Stage: %{customdata[1]}<br>"
-            "Matches: %{x}"
-            "<extra></extra>"
-        )
-    )
-
-    fig.update_layout(
-        xaxis_title="Matches Officiated",
-        yaxis_title=None,
-        legend_title=None,
-    )
-
-    return _style_dashboard_chart(fig, height=300)
+    return fig

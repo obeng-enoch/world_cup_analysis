@@ -18,7 +18,7 @@ from dashboard.utils.dashboard_data import (
     get_club_charts,
     get_club_tables,
 )
-from dashboard.theme.icons import CHART, PLAYER, TROPHY
+from dashboard.theme.icons import USERS, TROPHY, TRENDING_UP
 from dashboard.theme.colors import PRIMARY
 
 import streamlit as st
@@ -47,7 +47,7 @@ with section("Club Highlights"):
                 "countries represented"
             ),
             value=f'{most_represented["players_sent"]} players',
-            icon=PLAYER,
+            icon=USERS,
             icon_color=PRIMARY,
         )
 
@@ -70,66 +70,77 @@ with section("Club Highlights"):
                 f'{top_contributor["assists"]} assists'
             ),
             value=f'{top_contributor["goal_contributions"]} contributions',
-            icon=CHART,
+            icon=TRENDING_UP,
             icon_color=PRIMARY,
         )
 
 
-# CLUB PERFORMANCE
-col1, col2, col3 = three_columns()
+    # CLUB PERFORMANCE
+    col1, col2, col3 = three_columns()
 
-with col1:
-    with st.container(border=True):
-        st.caption("Club Representation")
-        st.plotly_chart(
-            plot_club_representation_chart(
-                charts["most_representation"]
-            ),
-            width="stretch",
-        )
+    with col1:
+        with st.container(border=True):
+            st.caption("Club Representation")
+            st.plotly_chart(
+                plot_club_representation_chart(
+                    charts["most_representation"]
+                ),
+                width="stretch",
+            )
 
-with col2:
-    with st.container(border=True):
-        st.caption("Clubs Whose Players have had most minutes")
-        st.plotly_chart(
-            plot_club_minutes_played_chart(
-                charts["minutes_played"]
-            ),
-            width="stretch",
-        )
+    with col2:
+        with st.container(border=True):
+            st.caption("Clubs Whose Players have had most minutes")
+            st.plotly_chart(
+                plot_club_minutes_played_chart(
+                    charts["minutes_played"]
+                ),
+                width="stretch",
+            )
 
-with col3:
-    with st.container(border=True):
-        st.caption("Club Performance")
-        st.plotly_chart(
-            plot_club_goal_contributions_chart(
-                charts["goal_contributions"]
-            ),
-            width="stretch",
-        )
-
-
+    with col3:
+        with st.container(border=True):
+            st.caption("Club Performance")
+            st.plotly_chart(
+                plot_club_goal_contributions_chart(
+                    charts["goal_contributions"]
+                ),
+                width="stretch",
+            )
 
 
-# CLUB INTELLIGENCE
-col1, col2 = two_columns()
 
-with col1:
-    with st.container(border=True):
-        st.caption("Club Discipline")
-        st.dataframe(
-            tables["discipline"],
-            hide_index=True,
-            width="stretch",
-            height=180,
-        )
 
-with col2:
-    with st.container(border=True):
-        st.caption("Club Representation in Medal Teams")
-        st.dataframe(
-            tables["club_medals"],
-            hide_index=True,
-            width="stretch",
-            height=180,
-        )
+    # CLUB INTELLIGENCE
+    col1, col2 = two_columns()
+
+    with col1:
+        with st.container(border=True):
+            st.caption("Club Discipline")
+            st.dataframe(
+                tables["discipline"].rename(columns={
+                    "club_team": "Club",
+                    "players_sent": "Players Sent",
+                    "total_yellow_cards": "Yellow Cards",
+                    "total_red_cards": "Red Cards",
+                }),
+                hide_index=True,
+                width="stretch",
+                height=180,
+            )
+
+    with col2:
+        with st.container(border=True):
+            st.caption("Club Representation in Medal Teams")
+            st.dataframe(
+                tables["club_medals"].rename(columns={
+                    "club_team": "Club",
+                    "gold": "Gold",
+                    "silver": "Silver",
+                    "bronze": "Bronze",
+                    "total_medals": "Total Medals"
+                }),
+                hide_index=True,
+                width="stretch",
+                height=180,
+            )

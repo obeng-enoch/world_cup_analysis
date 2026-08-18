@@ -2,8 +2,6 @@
 SELECT
     r.name AS referee,
     r.country,
-    m.match_id,
-    m.date,
     ht.fifa_code || ' VS ' || at.fifa_code AS match,
     t.fifa_code AS carded_team,
     ps.player_name,

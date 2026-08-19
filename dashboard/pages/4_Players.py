@@ -188,6 +188,7 @@ else:
                 discipline["yellow_cards"].rename(columns={
                         "player_name": "Player",
                         "team": "Team",
+                        "total_cards": "Total Cards",
                         "yellow_cards": "Yellow Cards",
                         "red_cards": "Red Cards",
                         "matches_played": "Matches",

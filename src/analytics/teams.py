@@ -15,12 +15,6 @@ def get_discipline_teams():
 def get_highest_scoring_teams():
     return get_dataframe("teams/highest_scoring_teams.sql")
 
-def get_most_clinicals():
-    return get_dataframe("teams/most_clinicals.sql")
-
-def get_pre_tournament_ranking():
-    return get_dataframe("teams/pre_tournament_ranking.sql")
-
 def get_squad_experience():
     return get_dataframe("teams/squad_experience.sql")
 

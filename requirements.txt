@@ -1,0 +1,6 @@
+# Core data pipeline and analytics
+pandas>=3.0,<4.0
+
+# Dashboard
+streamlit>=1.50,<2.0
+plotly>=6.0,<7.0

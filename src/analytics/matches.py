@@ -12,9 +12,6 @@ def get_ended_penalties():
 def get_goals_per_venue():
     return get_dataframe("match_analysis/goal_per_venue.sql")
 
-def get_goals_per_stage():
-    return get_dataframe("match_analysis/goals_per_stage.sql")
-
 def get_goal_timing():
     return get_dataframe("match_analysis/goal_timing.sql")
 

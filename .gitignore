@@ -31,3 +31,6 @@ plots/
 
 # OS files
 .DS_Store
+
+# Python packaging metadata
+*.egg-info/

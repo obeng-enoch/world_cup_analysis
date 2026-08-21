@@ -1,3 +1,5 @@
+import streamlit as st
+
 from src.analytics.tournament import (
     get_total_teams,
     get_total_players,
@@ -84,6 +86,7 @@ from src.analytics.referees import (
     get_stage_workload,
 )
 
+@st.cache_data
 def get_homepage_metrics():
     """
     Return all metrics required by the dashboard home page.
@@ -95,6 +98,7 @@ def get_homepage_metrics():
         "goals": get_total_goals(),
     }
 
+@st.cache_data
 def get_tournament_summary():
     return {
         "teams": get_total_teams(),
@@ -106,19 +110,23 @@ def get_tournament_summary():
         "third_place": get_third_place(),
     }
 
-
+@st.cache_data
 def get_tournament_awards():
     return get_awards()
 
+@st.cache_data
 def get_tournament_finish_table():
     return get_tournament_finish()
 
+@st.cache_data
 def get_goals_per_stage_chart():
     return get_goals_per_stage()
 
+@st.cache_data
 def get_tournament_event_counts():
     return get_event_counts()
 
+@st.cache_data
 def get_player_summary():
     """
     Returns the headline player achievements shown
@@ -134,6 +142,7 @@ def get_player_summary():
         "top_goalkeeper": top_goalkeeper,
     }
 
+@st.cache_data
 def get_scoring_tables():
     """
     Returns all attacking player tables.
@@ -147,6 +156,7 @@ def get_scoring_tables():
         "own_goals": get_own_goals(),
     }
 
+@st.cache_data
 def get_player_charts():
     """
     Returns datasets required by the Players page charts.
@@ -158,6 +168,7 @@ def get_player_charts():
         "man_of_the_match_players":get_man_of_the_match_players(),
     }
 
+@st.cache_data
 def get_discipline_tables():
     """
     Returns disciplinary statistics.
@@ -168,6 +179,7 @@ def get_discipline_tables():
         "red_cards": get_red_cards(),
     }
 
+@st.cache_data
 def get_goalkeeping_tables():
     """
     Returns goalkeeper statistics.
@@ -179,6 +191,7 @@ def get_goalkeeping_tables():
         "goals_conceded": get_goals_conceded(),
     }
 
+@st.cache_data
 def get_player_achievements():
     """
     Returns notable player achievements.
@@ -190,6 +203,7 @@ def get_player_achievements():
         "man_of_the_match": get_man_of_the_match_players(),
     }
 
+@st.cache_data
 def get_team_summary():
     """
     Returns the three headline team highlights for the Teams pages.and
@@ -207,6 +221,7 @@ def get_team_summary():
         "third_place": third_place,
     }
 
+@st.cache_data
 def get_team_charts():
     """
     Returns datasets used by the Teams page charts.
@@ -218,6 +233,7 @@ def get_team_charts():
         "man_of_the_match_teams": get_man_of_the_match_teams(),
     }
 
+@st.cache_data
 def get_team_tables():
     """
     Returns the supporting tables displayed on the Teams page.
@@ -228,6 +244,7 @@ def get_team_tables():
         "discipline_teams": get_discipline_teams(),
     }
 
+@st.cache_data
 def get_match_summary():
     """
     Returns datasets used by the Matches page charts.
@@ -239,18 +256,21 @@ def get_match_summary():
         "biggest_upsets": get_biggest_upsets().iloc[0],
     }
 
+@st.cache_data
 def get_match_charts():
     return {
         "goal_timing": get_goal_timing(),
         "match_result_distribution": get_match_result_distribution(),
     }
 
+@st.cache_data
 def get_match_tables():
     return {
         "match_results": get_match_results(),
         "possession": get_possession_dominant(),
     }
 
+@st.cache_data
 def get_club_summary():
     """
     Returns the headline club achievements shown
@@ -267,7 +287,7 @@ def get_club_summary():
         "top_contributor": top_contributor,
     }
 
-
+@st.cache_data
 def get_club_charts():
     """
     Returns datasets required by the Clubs page charts.
@@ -280,7 +300,7 @@ def get_club_charts():
         "valuable": get_valuable(),
     }
 
-
+@st.cache_data
 def get_club_tables():
     """
     Returns supporting club analysis tables.
@@ -291,6 +311,7 @@ def get_club_tables():
         "club_medals": get_club_medals(),
     }
 
+@st.cache_data
 def get_venue_summary():
     highest_scoring = get_venue_highest_scoring().iloc[0]
     busiest_venue = get_goals_per_venue().sort_values(
@@ -305,6 +326,7 @@ def get_venue_summary():
         "highest_elevation": highest_elevation,
     }
 
+@st.cache_data
 def get_venue_charts():
     return {
         "goals_per_venue": get_goals_per_venue(),
@@ -313,6 +335,7 @@ def get_venue_charts():
         "stage_distribution": get_stage_distribution(),
     }
 
+@st.cache_data
 def get_venue_tables():
     return {
         "directory": get_directory(),
@@ -321,6 +344,7 @@ def get_venue_tables():
         "country_hosted": get_country_hosted(),
     }
 
+@st.cache_data
 def get_referee_summary():
     """
     Returns the headline referee highlights shown
@@ -337,6 +361,7 @@ def get_referee_summary():
         "highest_cards": highest_cards,
     }
 
+@st.cache_data
 def get_referee_charts():
     """
     Returns datasets required by the Referees page charts.
@@ -349,6 +374,7 @@ def get_referee_charts():
         "fouls": get_fouls(),
     }
 
+@st.cache_data
 def get_referee_tables():
     """
     Returns supporting referee analysis tables.

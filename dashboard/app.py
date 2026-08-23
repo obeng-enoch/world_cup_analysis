@@ -6,6 +6,7 @@ from dashboard.components.metrics import metric_card
 from dashboard.theme.icons import GOAL, MATCH, USERS, WORLD
 from dashboard.utils.dashboard_data import get_homepage_metrics
 from dashboard.theme.css import load_css
+from src.analytics.database import AnalyticsQueryError
 
 # Page Configuration
 
@@ -40,7 +41,11 @@ Python, SQLite, SQL, Pandas, Streamlit, and Plotly.
 )
 
 # Dashboard Data
-metrics = get_homepage_metrics()
+try:
+    metrics = get_homepage_metrics()
+except AnalyticsQueryError:
+    st.error("Unable to load dashboard data right now. Please try again later.")
+    st.stop()
 
 # Tournament Snapshot
 st.subheader("Tournament Snapshot")

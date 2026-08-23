@@ -23,12 +23,16 @@ from dashboard.theme.css import load_css
 # load css
 load_css()
 
+from src.analytics.database import AnalyticsQueryError
 
-# load data
-summary = get_venue_summary()
-charts = get_venue_charts()
-tables = get_venue_tables()
-
+# Clubs Summary
+try:
+    summary = get_venue_summary()
+    charts = get_venue_charts()
+    tables = get_venue_tables()
+except AnalyticsQueryError:
+    st.error("Unable to load venues data right now. Please try again later.")
+    st.stop()
 
 # VENUE HIGHLIGHTS
 

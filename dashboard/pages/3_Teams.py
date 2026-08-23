@@ -21,10 +21,16 @@ import streamlit as st
 # Load CSS
 load_css()
 
-# Load data
-summary = get_tournament_summary()
-charts = get_team_charts()
-tables = get_team_tables()
+from src.analytics.database import AnalyticsQueryError
+
+# Teams Summary
+try:
+    summary = get_tournament_summary()
+    charts = get_team_charts()
+    tables = get_team_tables()
+except AnalyticsQueryError:
+    st.error("Unable to load teams data right now. Please try again later.")
+    st.stop()
 
 with section("Finalists"):
     col1, col2, col3 = three_columns()

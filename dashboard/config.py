@@ -33,8 +33,6 @@ TOTAL_EVENTS = 790
 # Theme
 # --------------------------------------------------
 
-PRIMARY_COLOR = "#2E8B57"
-
 SECONDARY_COLOR = "#F4F4F4"
 
 ACCENT_COLOR = "#D4AF37"

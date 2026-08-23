@@ -26,13 +26,17 @@ import streamlit as st
 # Load CSS
 load_css()
 
+from src.analytics.database import AnalyticsQueryError
 
-# Load data
-summary = get_match_summary()
-charts = get_match_charts()
-tables = get_match_tables()
-goals_by_stage = get_goals_per_stage_chart()
-
+# Matches Summary
+try:
+    summary = get_match_summary()
+    charts = get_match_charts()
+    tables = get_match_tables()
+    goals_by_stage = get_goals_per_stage_chart()
+except AnalyticsQueryError:
+    st.error("Unable to load matches data right now. Please try again later.")
+    st.stop()
 
 # Match Highlights
 with section("Match Highlights"):

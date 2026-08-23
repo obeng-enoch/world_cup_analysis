@@ -14,14 +14,20 @@ from dashboard.components.charts import plot_event_counts_chart
 
 import streamlit as st
 
-# Load CSS
-load_css()
+from src.analytics.database import AnalyticsQueryError
 
 # Tournament Summary
-summary = get_tournament_summary()
-standings = get_tournament_finish_table()
-awards = get_tournament_awards()
-events = get_tournament_event_counts()
+try:
+    summary = get_tournament_summary()
+    standings = get_tournament_finish_table()
+    awards = get_tournament_awards()
+    events = get_tournament_event_counts()
+except AnalyticsQueryError:
+    st.error("Unable to load tournament data right now. Please try again later.")
+    st.stop()
+
+# Load CSS
+load_css()
 
 with section("Finalists"):
     col1, col2, col3 = three_columns()

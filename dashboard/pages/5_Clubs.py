@@ -26,10 +26,16 @@ import streamlit as st
 # load css
 load_css()
 
-# load data
-summary = get_club_summary()
-charts = get_club_charts()
-tables = get_club_tables()
+from src.analytics.database import AnalyticsQueryError
+
+# Clubs Summary
+try:
+    summary = get_club_summary()
+    charts = get_club_charts()
+    tables = get_club_tables()
+except AnalyticsQueryError:
+    st.error("Unable to load clubs data right now. Please try again later.")
+    st.stop()
 
 most_represented = summary["most_represented"]
 man_of_the_match_clubs = summary["man_of_the_match_clubs"]

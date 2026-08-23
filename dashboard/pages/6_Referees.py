@@ -22,9 +22,16 @@ from dashboard.theme.css import load_css
 
 load_css()
 
-summary = get_referee_summary()
-charts = get_referee_charts()
-tables = get_referee_tables()
+from src.analytics.database import AnalyticsQueryError
+
+# Clubs Summary
+try:
+    summary = get_referee_summary()
+    charts = get_referee_charts()
+    tables = get_referee_tables()
+except AnalyticsQueryError:
+    st.error("Unable to load referee data right now. Please try again later.")
+    st.stop()
 
 most_used = summary["most_used"]
 highest_fouls = summary["highest_fouls"]

@@ -26,14 +26,19 @@ import streamlit as st
 # Load CSS
 load_css()
 
+from src.analytics.database import AnalyticsQueryError
 
-# Load Data
-summary = get_player_summary()
-charts = get_player_charts()
-scoring = get_scoring_tables()
-achievements = get_player_achievements()
-discipline = get_discipline_tables()
-goalkeeping = get_goalkeeping_tables()
+# Players Summary
+try:
+    summary = get_player_summary()
+    charts = get_player_charts()
+    scoring = get_scoring_tables()
+    achievements = get_player_achievements()
+    discipline = get_discipline_tables()
+    goalkeeping = get_goalkeeping_tables()
+except AnalyticsQueryError:
+    st.error("Unable to load players data right now. Please try again later.")
+    st.stop()
 
 view = st.segmented_control(
     "Player analysis view",

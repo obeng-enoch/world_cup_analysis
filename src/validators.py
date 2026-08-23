@@ -676,7 +676,7 @@ def validate_match_lineups(df: pd.DataFrame) -> bool:
     ValueError
         If the DataFrame is empty, contains duplicate lineup IDs,
         is_starting_xi contains only valid binary values (0 or 1),
-        minutes_played is between 0 and 120, tactical position contains no missing vales.
+        minutes_played is between 0 and 120, tactical position contains no missing values.
     KeyError
         If required columns are missing.
     """
@@ -715,12 +715,6 @@ def validate_match_lineups(df: pd.DataFrame) -> bool:
     # Check 4: lineup_id is unique
     if not df["lineup_id"].is_unique:
         raise ValueError("Duplicate lineup_id values found.")
-    
-    # Check 4: lineup_id is unique
-    if not df["lineup_id"].is_unique:
-        raise ValueError(
-            "Duplicate lineup_id values found."
-        )
 
     # Check 5: is_starting_xi contains only valid binary values
     if not df["is_starting_xi"].isin([0, 1]).all():

@@ -2,7 +2,7 @@
 
 A portfolio-grade analytics application built to explore FIFA World Cup 2026 tournament, team, player, club, match, referee, and venue data through a modular data engineering and analytics pipeline.
 
-**Live Dashboard:** *Add deployed Streamlit URL after deployment*
+**Live Dashboard:** https://worldcupanalysis-qstbcercnuzpg2kh5yfipx.streamlit.app/
 **Repository:** `https://github.com/obeng-enoch/world_cup_analysis`
 
 ---
@@ -98,16 +98,16 @@ world_cup_analysis/
 │   └── dataset_inspection.md
 │
 ├── sql/
-│   ├── awards_records.sql
-│   ├── club_analysis.sql
-│   ├── event_analysis.sql
-│   ├── match_analysis.sql
-│   ├── player_analysis.sql
-│   ├── referee_analysis.sql
-│   ├── tactical_analysis.sql
-│   ├── team_analysis.sql
-│   ├── tournament_overview.sql
-│   └── venue_analysis.sql
+│   ├── awards/
+│   ├── club/
+│   ├── events/
+│   ├── match_analysis/
+│   ├── players/
+│   ├── referee/
+│   ├── tactical/
+│   ├── teams/
+│   ├── tournament_overview/
+│   └── venues/
 │
 ├── src/
 │   ├── analytics/
@@ -116,7 +116,11 @@ world_cup_analysis/
 │   ├── config.py
 │   ├── update_database.py
 │   └── validators.py
-│
+|
+├── tests/
+│   ├── analytics/
+│   └── (unit tests for ETL, database, validators, and analytics layer)
+|
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -179,9 +183,9 @@ The validated database contains the major tournament entities and analytical dat
 | `squads_and_players` | 1,248 |
 | `matches`            |   104 |
 | `player_stats`       | 1,248 |
-| `match_team_stats`   |   200 |
-| `match_events`       |   790 |
-| `match_lineups`      | 5,200 |
+| `match_team_stats`   |   208 |
+| `match_events`       |   834 |
+| `match_lineups`      | 5,408 |
 
 ---
 
@@ -358,6 +362,25 @@ python -m compileall -q src dashboard
 
 The dashboard was also successfully launched from the clean environment and all eight pages were verified.
 
+## Testing
+
+The project includes a pytest suite covering the ETL pipeline, database integrity, data validators, and the full Python analytics layer.
+
+**152 tests passing.**
+
+| Layer | Coverage |
+| --- | --- |
+| ETL / database build | Loader behavior, validation gating, table creation |
+| Data cleaning | Cleaning functions across all raw datasets |
+| Validators | Required columns, null checks, uniqueness, domain-specific rules |
+| Analytics layer | Every analytics module (tournament, teams, players, matches, clubs, awards, events, referees, tactical, venues) |
+
+Run the full suite with:
+
+\`\`\`bash
+pytest
+\`\`\`
+
 ---
 
 ## Development Principles
@@ -392,11 +415,11 @@ The objective is to demonstrate not only analytical ability, but also the abilit
 
 ## Project Status
 
-**Status: Ready for deployment**
+**Status: Deployed and live**
 
-The core ETL pipeline, analytical database, SQL layer, Python analytics layer, dashboard architecture, visual system, and home overview and seven dashboard pages are complete.
+The core ETL pipeline, analytical database, SQL layer, Python analytics layer, dashboard architecture, visual system, and all 8 dashboard pages (Home plus 7 domain pages)  are complete and tested.
 
-The project has passed clean-environment validation and is ready for public deployment.
+The project has passed clean-environment validation, a 152 automated suite, and is live on Streamlit Cloud.
 
 ---
 
